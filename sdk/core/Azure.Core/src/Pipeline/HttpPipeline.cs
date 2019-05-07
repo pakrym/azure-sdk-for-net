@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Core.Diagnostics;
 using Azure.Core.Pipeline.Policies;
 
 namespace Azure.Core.Pipeline
@@ -60,6 +61,8 @@ namespace Azure.Core.Pipeline
                 return message.Response;
             }
         }
+
+        public HttpPipelineDiagnostics Diagnostics { get; } = new HttpPipelineDiagnostics();
 
         public static HttpPipeline Build(HttpClientOptions options, ResponseClassifier responseClassifier, params HttpPipelinePolicy[] clientPolicies)
         {

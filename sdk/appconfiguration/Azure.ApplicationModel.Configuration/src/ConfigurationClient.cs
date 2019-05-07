@@ -91,6 +91,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response<ConfigurationSetting>> AddAsync(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Add"))
             using (Request request = CreateAddRequest(setting))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -113,6 +114,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response<ConfigurationSetting> Add(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Add"))
             using (Request request = CreateAddRequest(setting))
             {
                 Response response = _pipeline.SendRequest(request, cancellationToken);
@@ -184,6 +186,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response<ConfigurationSetting>> SetAsync(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Set"))
             using (Request request = CreateSetRequest(setting))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -207,6 +210,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response<ConfigurationSetting> Set(ConfigurationSetting setting, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Set"))
             using (Request request = CreateSetRequest(setting))
             {
                 var response = _pipeline.SendRequest(request, cancellationToken);
@@ -283,6 +287,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellation">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response<ConfigurationSetting>> UpdateAsync(ConfigurationSetting setting, CancellationToken cancellation = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Update"))
             using (Request request = CreateUpdateRequest(setting))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellation).ConfigureAwait(false);
@@ -304,6 +309,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellation">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response<ConfigurationSetting> Update(ConfigurationSetting setting, CancellationToken cancellation = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Update"))
             using (Request request = CreateUpdateRequest(setting))
             {
                 Response response = _pipeline.SendRequest(request, cancellation);
@@ -357,6 +363,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response> DeleteAsync(string key, string label = default, ETag etag = default, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Delete"))
             using (Request request = CreateDeleteRequest(key, label, etag))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -383,6 +390,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response Delete(string key, string label = default, ETag etag = default, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Delete"))
             using (Request request = CreateDeleteRequest(key, label, etag))
             {
                 Response response = _pipeline.SendRequest(request, cancellationToken);
@@ -424,6 +432,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response<ConfigurationSetting>> GetAsync(string key, string label = default, DateTimeOffset acceptDateTime = default, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Get"))
             using (Request request = CreateGetRequest(key, label, acceptDateTime))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -447,6 +456,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response<ConfigurationSetting> Get(string key, string label = default, DateTimeOffset acceptDateTime = default, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/Get"))
             using (Request request = CreateGetRequest(key, label, acceptDateTime))
             {
                 Response response = _pipeline.SendRequest(request, cancellationToken);
@@ -488,6 +498,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response<SettingBatch>> GetBatchAsync(SettingSelector selector, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/GetBatch"))
             using (Request request = CreateBatchRequest(selector))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -511,6 +522,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response<SettingBatch> GetBatch(SettingSelector selector, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/GetBatch"))
             using (Request request = CreateBatchRequest(selector))
             {
                 Response response = _pipeline.SendRequest(request, cancellationToken);
@@ -549,6 +561,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual async Task<Response<SettingBatch>> GetRevisionsAsync(SettingSelector selector, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/GetRevisions"))
             using (Request request = CreateGetRevisionsRequest(selector))
             {
                 Response response = await _pipeline.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -573,6 +586,7 @@ namespace Azure.ApplicationModel.Configuration
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
         public virtual Response<SettingBatch> GetRevisions(SettingSelector selector, CancellationToken cancellationToken = default)
         {
+            using (_pipeline.Diagnostics.StartOperation("Azure.ApplicationModel.Configuration/GetRevisions"))
             using (Request request = CreateGetRevisionsRequest(selector))
             {
                 Response response = _pipeline.SendRequest(request, cancellationToken);
