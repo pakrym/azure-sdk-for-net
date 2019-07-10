@@ -87,7 +87,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 // Create the body
                 System.Xml.Linq.XElement _body = Azure.Storage.Files.Models.FileServiceProperties.ToXml(properties, "StorageServiceProperties", "");
@@ -186,7 +186,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -311,7 +311,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -430,14 +430,14 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
-                if (quota != null) { _request.Headers.SetValue("x-ms-share-quota", quota.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));  }
+                if (quota != null) { _request.Headers.SetValue("x-ms-share-quota", quota.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)); }
 
                 return _request;
             }
@@ -554,7 +554,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -688,8 +688,8 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (deleteSnapshots != null) { _request.Headers.SetValue("x-ms-delete-snapshots", Azure.Storage.Files.FileRestClient.Serialization.ToString(deleteSnapshots.Value));  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (deleteSnapshots != null) { _request.Headers.SetValue("x-ms-delete-snapshots", Azure.Storage.Files.FileRestClient.Serialization.ToString(deleteSnapshots.Value)); }
 
                 return _request;
             }
@@ -786,11 +786,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -913,8 +913,8 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (quota != null) { _request.Headers.SetValue("x-ms-share-quota", quota.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (quota != null) { _request.Headers.SetValue("x-ms-share-quota", quota.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)); }
 
                 return _request;
             }
@@ -1031,11 +1031,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -1149,7 +1149,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -1260,7 +1260,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 // Create the body
                 System.Xml.Linq.XElement _body = new System.Xml.Linq.XElement(System.Xml.Linq.XName.Get("SignedIdentifiers", ""));
@@ -1386,7 +1386,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -1500,11 +1500,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -1623,7 +1623,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -1746,7 +1746,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -1843,11 +1843,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -1985,7 +1985,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -2109,10 +2109,10 @@ namespace Azure.Storage.Files
                 if (sharesnapshot != null) { _request.UriBuilder.AppendQuery("sharesnapshot", System.Uri.EscapeDataString(sharesnapshot)); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (recursive != null) { 
                 #pragma warning disable CA1308 // Normalize strings to uppercase
-                _request.Headers.SetValue("x-ms-recursive", recursive.Value.ToString(System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant()); 
+                _request.Headers.SetValue("x-ms-recursive", recursive.Value.ToString(System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant());
                 #pragma warning restore CA1308 // Normalize strings to uppercase
                  }
 
@@ -2241,11 +2241,11 @@ namespace Azure.Storage.Files
                 if (sharesnapshot != null) { _request.UriBuilder.AppendQuery("sharesnapshot", System.Uri.EscapeDataString(sharesnapshot)); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-handle-id", handleId); 
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-handle-id", handleId);
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (recursive != null) { 
                 #pragma warning disable CA1308 // Normalize strings to uppercase
-                _request.Headers.SetValue("x-ms-recursive", recursive.Value.ToString(System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant()); 
+                _request.Headers.SetValue("x-ms-recursive", recursive.Value.ToString(System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant());
                 #pragma warning restore CA1308 // Normalize strings to uppercase
                  }
 
@@ -2405,29 +2405,29 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                _request.Headers.SetValue("x-ms-content-length", fileContentLength.ToString(System.Globalization.CultureInfo.InvariantCulture)); 
-                _request.Headers.SetValue("x-ms-type", "file"); 
-                if (fileContentType != null) { _request.Headers.SetValue("x-ms-content-type", fileContentType);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                _request.Headers.SetValue("x-ms-content-length", fileContentLength.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                _request.Headers.SetValue("x-ms-type", "file");
+                if (fileContentType != null) { _request.Headers.SetValue("x-ms-content-type", fileContentType); }
                 if (fileContentEncoding != null) { 
                     foreach (string _item in fileContentEncoding)
                     {
-                        _request.Headers.SetValue("x-ms-content-encoding", _item); 
+                        _request.Headers.SetValue("x-ms-content-encoding", _item);
                     }
                  }
                 if (fileContentLanguage != null) { 
                     foreach (string _item in fileContentLanguage)
                     {
-                        _request.Headers.SetValue("x-ms-content-language", _item); 
+                        _request.Headers.SetValue("x-ms-content-language", _item);
                     }
                  }
-                if (fileCacheControl != null) { _request.Headers.SetValue("x-ms-cache-control", fileCacheControl);  }
-                if (fileContentHash != null) { _request.Headers.SetValue("x-ms-content-md5", System.Convert.ToBase64String(fileContentHash));  }
-                if (fileContentDisposition != null) { _request.Headers.SetValue("x-ms-content-disposition", fileContentDisposition);  }
+                if (fileCacheControl != null) { _request.Headers.SetValue("x-ms-cache-control", fileCacheControl); }
+                if (fileContentHash != null) { _request.Headers.SetValue("x-ms-content-md5", System.Convert.ToBase64String(fileContentHash)); }
+                if (fileContentDisposition != null) { _request.Headers.SetValue("x-ms-content-disposition", fileContentDisposition); }
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -2553,11 +2553,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (range != null) { _request.Headers.SetValue("x-ms-range", range);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (range != null) { _request.Headers.SetValue("x-ms-range", range); }
                 if (rangeGetContentHash != null) { 
                 #pragma warning disable CA1308 // Normalize strings to uppercase
-                _request.Headers.SetValue("x-ms-range-get-content-md5", rangeGetContentHash.Value.ToString(System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant()); 
+                _request.Headers.SetValue("x-ms-range-get-content-md5", rangeGetContentHash.Value.ToString(System.Globalization.CultureInfo.InvariantCulture).ToLowerInvariant());
                 #pragma warning restore CA1308 // Normalize strings to uppercase
                  }
 
@@ -2877,7 +2877,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -3061,7 +3061,7 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -3187,24 +3187,24 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (fileContentLength != null) { _request.Headers.SetValue("x-ms-content-length", fileContentLength.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));  }
-                if (fileContentType != null) { _request.Headers.SetValue("x-ms-content-type", fileContentType);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (fileContentLength != null) { _request.Headers.SetValue("x-ms-content-length", fileContentLength.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)); }
+                if (fileContentType != null) { _request.Headers.SetValue("x-ms-content-type", fileContentType); }
                 if (fileContentEncoding != null) { 
                     foreach (string _item in fileContentEncoding)
                     {
-                        _request.Headers.SetValue("x-ms-content-encoding", _item); 
+                        _request.Headers.SetValue("x-ms-content-encoding", _item);
                     }
                  }
                 if (fileContentLanguage != null) { 
                     foreach (string _item in fileContentLanguage)
                     {
-                        _request.Headers.SetValue("x-ms-content-language", _item); 
+                        _request.Headers.SetValue("x-ms-content-language", _item);
                     }
                  }
-                if (fileCacheControl != null) { _request.Headers.SetValue("x-ms-cache-control", fileCacheControl);  }
-                if (fileContentHash != null) { _request.Headers.SetValue("x-ms-content-md5", System.Convert.ToBase64String(fileContentHash));  }
-                if (fileContentDisposition != null) { _request.Headers.SetValue("x-ms-content-disposition", fileContentDisposition);  }
+                if (fileCacheControl != null) { _request.Headers.SetValue("x-ms-cache-control", fileCacheControl); }
+                if (fileContentHash != null) { _request.Headers.SetValue("x-ms-content-md5", System.Convert.ToBase64String(fileContentHash)); }
+                if (fileContentDisposition != null) { _request.Headers.SetValue("x-ms-content-disposition", fileContentDisposition); }
 
                 return _request;
             }
@@ -3324,11 +3324,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -3474,11 +3474,11 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-range", range); 
-                _request.Headers.SetValue("x-ms-write", Azure.Storage.Files.FileRestClient.Serialization.ToString(fileRangeWrite)); 
-                _request.Headers.SetValue("Content-Length", contentLength.ToString(System.Globalization.CultureInfo.InvariantCulture)); 
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (contentHash != null) { _request.Headers.SetValue("Content-MD5", System.Convert.ToBase64String(contentHash));  }
+                _request.Headers.SetValue("x-ms-range", range);
+                _request.Headers.SetValue("x-ms-write", Azure.Storage.Files.FileRestClient.Serialization.ToString(fileRangeWrite));
+                _request.Headers.SetValue("Content-Length", contentLength.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (contentHash != null) { _request.Headers.SetValue("Content-MD5", System.Convert.ToBase64String(contentHash)); }
 
                 // Create the body
                 _request.Content = Azure.Core.Pipeline.HttpPipelineRequestContent.Create(optionalbody);
@@ -3611,8 +3611,8 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (range != null) { _request.Headers.SetValue("x-ms-range", range);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (range != null) { _request.Headers.SetValue("x-ms-range", range); }
 
                 return _request;
             }
@@ -3746,12 +3746,12 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                _request.Headers.SetValue("x-ms-copy-source", copySource.ToString()); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                _request.Headers.SetValue("x-ms-copy-source", copySource.ToString());
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
 
@@ -3882,8 +3882,8 @@ namespace Azure.Storage.Files
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-copy-action", "abort"); 
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-copy-action", "abort");
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -3992,7 +3992,7 @@ namespace Azure.Storage.Files
                 if (sharesnapshot != null) { _request.UriBuilder.AppendQuery("sharesnapshot", System.Uri.EscapeDataString(sharesnapshot)); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }
@@ -4114,8 +4114,8 @@ namespace Azure.Storage.Files
                 if (sharesnapshot != null) { _request.UriBuilder.AppendQuery("sharesnapshot", System.Uri.EscapeDataString(sharesnapshot)); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-handle-id", handleId); 
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-handle-id", handleId);
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
 
                 return _request;
             }

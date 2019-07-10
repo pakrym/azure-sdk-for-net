@@ -276,7 +276,7 @@ function generateOperation(w: IndentWriter, serviceModel: IServiceModel, group: 
         }
 
         w.line(`// Create the request`);
-        w.line(`Azure.Core.Http.HttpRequest ${requestName} = ${pipelineName}.CreateRequest();`);
+        w.line(`Azure.Core.Http.Request ${requestName} = ${pipelineName}.CreateRequest();`);
         w.line();
 
         w.line(`// Set the endpoint`);
@@ -309,7 +309,7 @@ function generateOperation(w: IndentWriter, serviceModel: IServiceModel, group: 
                         name = `"${header.model.dictionaryPrefix || 'x-ms-meta-'}" + ${value}.Key`;
                         value = `${value}.Value`;
                     }
-                    w.write(`${requestName}.Headers.SetValue(${name}, ${value}); `);
+                    w.write(`${requestName}.Headers.SetValue(${name}, ${value});`);
                 });
             }
             w.line();

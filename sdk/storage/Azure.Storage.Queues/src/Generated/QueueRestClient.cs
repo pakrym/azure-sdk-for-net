@@ -92,8 +92,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 // Create the body
                 System.Xml.Linq.XElement _body = Azure.Storage.Queues.Models.QueueServiceProperties.ToXml(properties, "StorageServiceProperties", "");
@@ -197,8 +197,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -305,8 +305,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -436,8 +436,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -555,14 +555,14 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -661,8 +661,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -758,8 +758,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -884,14 +884,14 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
                 if (metadata != null) { 
                     foreach (System.Collections.Generic.KeyValuePair<string, string> _pair in metadata)
                     {
-                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value); 
+                        _request.Headers.SetValue("x-ms-meta-" + _pair.Key, _pair.Value);
                     }
                  }
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -987,8 +987,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -1103,8 +1103,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 // Create the body
                 System.Xml.Linq.XElement _body = new System.Xml.Linq.XElement(System.Xml.Linq.XName.Get("SignedIdentifiers", ""));
@@ -1233,8 +1233,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -1343,8 +1343,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -1460,8 +1460,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 // Create the body
                 System.Xml.Linq.XElement _body = Azure.Storage.Queues.Models.QueueMessage.ToXml(message, "QueueMessage", "");
@@ -1584,8 +1584,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
@@ -1727,8 +1727,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 // Create the body
                 System.Xml.Linq.XElement _body = Azure.Storage.Queues.Models.QueueMessage.ToXml(message, "QueueMessage", "");
@@ -1860,8 +1860,8 @@ namespace Azure.Storage.Queues
                 if (timeout != null) { _request.UriBuilder.AppendQuery("timeout", System.Uri.EscapeDataString(timeout.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))); }
 
                 // Add request headers
-                _request.Headers.SetValue("x-ms-version", "2018-11-09"); 
-                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId);  }
+                _request.Headers.SetValue("x-ms-version", "2018-11-09");
+                if (requestId != null) { _request.Headers.SetValue("x-ms-client-request-id", requestId); }
 
                 return _request;
             }
