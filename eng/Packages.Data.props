@@ -99,13 +99,13 @@
   <!-- Track 2 specific versions -->
   <ItemGroup Condition="'$(IsClientLibrary)' == 'true'">
     <PackageReference Update="System.Memory" Version="4.5.3" />
-    <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0-preview6.19259.10" />
+    <PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0-preview6.19303.8" />
     <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.Options" Version="2.1.0" />
-    <PackageReference Update="System.Text.Json" Version="4.6.0-preview6.19259.10" />
-    <PackageReference Update="System.Diagnostics.DiagnosticSource" Version="4.6.0-preview6.19259.10" />
-    <PackageReference Update="System.Runtime.CompilerServices.Unsafe" Version="4.6.0-preview6.19259.10" />
+    <PackageReference Update="System.Text.Json" Version="4.6.0-preview6.19303.8" />
+    <PackageReference Update="System.Diagnostics.DiagnosticSource" Version="4.6.0-preview6.19303.8" />
+    <PackageReference Update="System.Runtime.CompilerServices.Unsafe" Version="4.6.0-preview6.19303.8" />
   </ItemGroup>
 </Project>
