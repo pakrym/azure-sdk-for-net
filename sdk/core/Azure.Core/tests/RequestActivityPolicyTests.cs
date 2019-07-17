@@ -30,7 +30,9 @@ namespace Azure.Core.Tests
             {
                 activity = Activity.Current;
                 startEvent = testListener.Events.Dequeue();
-                return new MockResponse(201);
+                var response = new MockResponse(201);
+                response.AddHeader(new HttpHeader("x-ms-request-id", "12345"));
+                return response;
             });
 
             using Request request = mockTransport.CreateRequest();
@@ -49,10 +51,13 @@ namespace Azure.Core.Tests
 
             Assert.AreEqual("Azure.Core.Http.Request", activity.OperationName);
 
+            CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("component", "http"));
             CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("http.status_code", "201"));
             CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("http.url", "http://example.com/"));
             CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("http.method", "GET"));
             CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("http.user_agent", "agent"));
+            CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("requestId", request.ClientRequestId));
+            CollectionAssert.Contains(activity.Tags, new KeyValuePair<string, string>("serviceRequestId", "12345"));
         }
 
         [Test]
