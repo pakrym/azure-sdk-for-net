@@ -8,9 +8,11 @@ namespace Azure.Core.Extensions.Samples
 {
     internal class DependencyInjectionEnabledPolicy : SynchronousHttpPipelinePolicy
     {
+#pragma warning disable 618
         private readonly IHostingEnvironment _environment;
 
         public DependencyInjectionEnabledPolicy(IHostingEnvironment environment)
+#pragma warning restore 618
         {
             this._environment = environment;
         }
