@@ -8,9 +8,8 @@
     <PackageReference Update="Microsoft.AspNetCore.App" IsImplicitlyDefined="true" />
     <ProjectReference Include="..\..\..\keyvault\Azure.Security.KeyVault.Secrets\src\Azure.Security.KeyVault.Secrets.csproj" />
     <ProjectReference Include="..\..\..\storage\Azure.Storage.Blobs\src\Azure.Storage.Blobs.csproj" />
-    <ProjectReference Include="..\src\Azure.Core.Extensions.csproj" />
 
-<!-- 
+<!--
     <ProjectReference Include="d:\github\azure\opentelemetry-dotnet\src\OpenTelemetry\OpenTelemetry.csproj" />
     <ProjectReference Include="d:\github\azure\opentelemetry-dotnet\src\OpenTelemetry.Collector.AspNetCore\OpenTelemetry.Collector.AspNetCore.csproj" />
     <ProjectReference Include="d:\github\azure\opentelemetry-dotnet\src\OpenTelemetry.Exporter.Zipkin\OpenTelemetry.Exporter.Zipkin.csproj" />
