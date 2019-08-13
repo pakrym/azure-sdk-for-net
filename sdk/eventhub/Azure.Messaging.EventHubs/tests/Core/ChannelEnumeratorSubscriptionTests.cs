@@ -288,9 +288,9 @@ namespace Azure.Messaging.EventHubs.Tests
             var iterateCount = 0;
             var maxReadItems = 2;
             var currentItem = 0;
-            var maxWaitTime = TimeSpan.FromMilliseconds(25);
-            var cancelTimeout = TimeSpan.FromMilliseconds(280);
-            var abortTimeout = cancelTimeout.Add(TimeSpan.FromSeconds(1));
+            var maxWaitTime = TimeSpan.FromMilliseconds(5);
+            var cancelTimeout = TimeSpan.FromSeconds(1);
+            var abortTimeout = cancelTimeout.Add(TimeSpan.FromSeconds(10));
             var channelItems = new[] { 1, 4, 7, 9 };
             var mockReader = new Mock<ChannelReader<int>>();
 
@@ -319,7 +319,6 @@ namespace Azure.Messaging.EventHubs.Tests
                 .Callback(channelReadCallback)
                 .Returns(() =>
                 {
-                    Thread.Sleep(maxWaitTime);
                     return channelIndex < maxReadItems;
                 });
 
@@ -341,6 +340,7 @@ namespace Azure.Messaging.EventHubs.Tests
 
                 if (stopWatch.Elapsed > abortTimeout)
                 {
+                    readCancellation.Cancel();
                     forcedAbort = true;
                     break;
                 }

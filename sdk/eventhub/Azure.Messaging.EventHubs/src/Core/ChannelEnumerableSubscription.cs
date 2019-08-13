@@ -20,19 +20,13 @@ namespace Azure.Messaging.EventHubs.Core
     ///
     /// <seealso cref="IAsyncEnumerable{T}" />
     ///
-    internal class ChannelEnumerableSubscription<T> : IAsyncEnumerable<T>, IAsyncDisposable
+    internal class ChannelEnumerableSubscription<T> : IAsyncEnumerable<T>, IAsyncEnumerator<T>, IAsyncDisposable
     {
-        /// <summary>The reader for the channel associated with the subscription.</summary>
-        private readonly ChannelReader<T> ChannelReader;
-
         /// <summary>The callback function to invoke to unsubscribe.</summary>
         private readonly Func<Task> UnsubscribeCallbackAsync;
 
-        /// <summary>The maximum amount of time to wait to for an event to be available before emitting an empty item; if <c>null</c>, empty items will not be published.</summary>
-        private readonly TimeSpan? MaximumWaitTime;
-
-        /// <summary>The <see cref="System.Threading.CancellationToken"/> instance to signal the request to cancel reading from the channel for enumeration.</summary>
-        private readonly CancellationToken CancellationToken;
+        /// <summary>A flag that indicates whether or not the instance has been disposed.</summary>
+        private readonly Lazy<IAsyncEnumerator<T>> SourceEnumerator;
 
         /// <summary>A flag that indicates whether or not the instance has been disposed.</summary>
         private bool _disposed = false;
@@ -59,10 +53,11 @@ namespace Azure.Messaging.EventHubs.Core
                 Guard.ArgumentNotNegative(nameof(maximumWaitTime), maximumWaitTime.Value);
             }
 
-            ChannelReader = reader;
-            MaximumWaitTime = maximumWaitTime;
             UnsubscribeCallbackAsync = unsubscribeCallbackAsync;
-            CancellationToken = cancellationToken;
+
+            SourceEnumerator = new Lazy<IAsyncEnumerator<T>>(
+                () => EnumerateChannel(reader, maximumWaitTime, cancellationToken).GetAsyncEnumerator(cancellationToken),
+                LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         /// <summary>
@@ -80,8 +75,7 @@ namespace Azure.Messaging.EventHubs.Core
                 throw new ObjectDisposedException(nameof(ChannelEnumerableSubscription<T>));
             }
 
-            return new ChannelEnumerator(EnumerateChannel(ChannelReader, MaximumWaitTime, CancellationToken)
-                .GetAsyncEnumerator(cancellationToken), DisposeAsync);
+            return this;
         }
 
         /// <summary>
@@ -97,7 +91,18 @@ namespace Azure.Messaging.EventHubs.Core
                 return;
             }
 
-            await UnsubscribeCallbackAsync().ConfigureAwait(false);
+            try
+            {
+                if (SourceEnumerator.IsValueCreated)
+                {
+                    await SourceEnumerator.Value.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+               await UnsubscribeCallbackAsync().ConfigureAwait(false);
+            }
+
             _disposed = true;
         }
 
@@ -116,27 +121,13 @@ namespace Azure.Messaging.EventHubs.Core
                                                                   [EnumeratorCancellation]CancellationToken cancellationToken)
         {
             T result;
-            int delayMilliseconds;
-
-            var waitTime = maximumWaitTime?.TotalMilliseconds;
-            var timer = (waitTime.HasValue) ? Stopwatch.StartNew() : default;
+            CancellationTokenSource waitCancel;
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Attempt to read events from the channel.
-
                 if (reader.TryRead(out result))
                 {
                     yield return result;
-                    timer?.Restart();
-                }
-                else if ((waitTime.HasValue) && (timer.ElapsedMilliseconds > waitTime.Value))
-                {
-                    // If there was no event and the wait time has expired, emit an empty event to return control to
-                    // the calling iterator.
-
-                    yield return default;
-                    timer.Restart();
                 }
                 else if (reader.Completion.IsCompleted)
                 {
@@ -156,27 +147,39 @@ namespace Azure.Messaging.EventHubs.Core
                 }
                 else
                 {
-                    // TODO (P1//squire): Determine a better approach to prevent a tight loop that consumes resources or
-                    // has excessive allocations.  (see: https://github.com/Azure/azure-sdk-for-net/issues/7094)
-
-                    try
+                    using (waitCancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                     {
-                        delayMilliseconds = 50;
-
-                        if (waitTime.HasValue)
+                        if (maximumWaitTime.HasValue)
                         {
-                            delayMilliseconds = (int)Math.Min(delayMilliseconds, (waitTime.Value - timer.ElapsedMilliseconds));
+                            waitCancel.CancelAfter(maximumWaitTime.Value);
                         }
 
-                        if (delayMilliseconds > 0)
+                        try
                         {
-                            await Task.Delay(delayMilliseconds, cancellationToken).ConfigureAwait(false);
+                            // Wait for an item to be available in the channel; if it becomes so, then
+                            // reset the loop so that it can be read and emitted.
+
+                            if (await reader.WaitToReadAsync(waitCancel.Token).ConfigureAwait(false))
+                            {
+                                continue;
+                            }
                         }
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        // This is an expected case when the cancellation token was
-                        // triggered during an operation; no action is needed.
+                        catch (Exception ex) when
+                            (ex is TaskCanceledException || ex is OperationCanceledException)
+                        {
+                            // This is an expected case when the token was canceled or when the channel is
+                            // marked as final by the writer while waiting; no action is needed.
+                        }
+
+                        // If the channel stopped waiting and no item was available, either the maximum wait time
+                        // elapsed or the iteration has been canceled.  If the wait token was set, but the main
+                        // cancellation token was not, then the wait time was exceeded and a default item needs to
+                        // be emitted.
+
+                        if ((waitCancel.IsCancellationRequested) && (!cancellationToken.IsCancellationRequested))
+                        {
+                            yield return default;
+                        }
                     }
                 }
             }
@@ -185,65 +188,17 @@ namespace Azure.Messaging.EventHubs.Core
         }
 
         /// <summary>
-        ///   An asynchronous enumerator associated with a channel-reading source enumerable that will
-        ///   attempt to unsubscribe when disposed.
+        ///   The current event in the set being enumerated.
         /// </summary>
         ///
-        /// <seealso cref="IAsyncEnumerator{T}" />
+        T IAsyncEnumerator<T>.Current => SourceEnumerator.Value.Current;
+
+        /// <summary>
+        ///   Moves to the next event in the set being enumerated.
+        /// </summary>
         ///
-        private class ChannelEnumerator : IAsyncEnumerator<T>
-        {
-            /// <summary>The callback function to invoke on disposal.</summary>
-            private readonly Func<ValueTask> DisposeCallbackAsync;
-
-            /// <summary>The enumerator instance to use as the source of events.</summary>
-            private readonly IAsyncEnumerator<T> Source;
-
-            /// <summary>
-            ///   The current event in the set being enumerated.
-            /// </summary>
-            ///
-            public T Current => Source.Current;
-
-            /// <summary>
-            ///   Initializes a new instance of the <see cref="ChannelEnumerator"/> class.
-            /// </summary>
-            ///
-            /// <param name="source">The enumerator instance to use as the source of events.</param>
-            /// <param name="disposeCallbackAsync">The callback function to invoke on disposal.</param>
-            ///
-            public ChannelEnumerator(IAsyncEnumerator<T> source,
-                                     Func<ValueTask> disposeCallbackAsync)
-            {
-                Source = source;
-                DisposeCallbackAsync = disposeCallbackAsync;
-            }
-
-            /// <summary>
-            ///   Moves to the next event in the set being enumerated.
-            /// </summary>
-            ///
-            /// <returns><c>true</c> if there was an event to move to; otherwise, <c>false</c>.</returns>
-            ///
-            public ValueTask<bool> MoveNextAsync() => Source.MoveNextAsync();
-
-            /// <summary>
-            ///   Performs the tasks needed to clean up the enumerator, including
-            ///   attempting to unsubscribe from the associated subscription.
-            /// </summary>
-            ///
-            ///
-            public async ValueTask DisposeAsync()
-            {
-                try
-                {
-                    await Source.DisposeAsync().ConfigureAwait(false);
-                }
-                finally
-                {
-                    await DisposeCallbackAsync().ConfigureAwait(false);
-                }
-            }
-        }
+        /// <returns><c>true</c> if there was an event to move to; otherwise, <c>false</c>.</returns>
+        ///
+        ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync() => SourceEnumerator.Value.MoveNextAsync();
     }
 }
