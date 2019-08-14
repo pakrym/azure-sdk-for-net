@@ -25,7 +25,7 @@ namespace Azure.Messaging.EventHubs.Core
         /// <summary>The callback function to invoke to unsubscribe.</summary>
         private readonly Func<Task> UnsubscribeCallbackAsync;
 
-        /// <summary>A flag that indicates whether or not the instance has been disposed.</summary>
+        /// <summary>The source enumerator to use for iterating through the published events.</summary>
         private readonly Lazy<IAsyncEnumerator<T>> SourceEnumerator;
 
         /// <summary>A flag that indicates whether or not the instance has been disposed.</summary>
@@ -121,67 +121,81 @@ namespace Azure.Messaging.EventHubs.Core
                                                                   [EnumeratorCancellation]CancellationToken cancellationToken)
         {
             T result;
-            CancellationTokenSource waitCancel;
 
-            while (!cancellationToken.IsCancellationRequested)
+            var waitToken = cancellationToken;
+            var waitSource = default(CancellationTokenSource);
+            var maximumDelay = TimeSpan.FromDays(10);
+
+            try
             {
-                if (reader.TryRead(out result))
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    yield return result;
-                }
-                else if (reader.Completion.IsCompleted)
-                {
-                    // If the channel was marked as final, then await the completion task to surface any exceptions.
-
-                    try
+                    if (reader.TryRead(out result))
                     {
+                        waitSource?.CancelAfter(maximumDelay);
+                        yield return result;
+                    }
+                    else if (reader.Completion.IsCompleted)
+                    {
+                        // If the channel was marked as final, then await the completion task to surface any exceptions.
+
                         await reader.Completion.ConfigureAwait(false);
+                        break;
                     }
-                    catch (TaskCanceledException)
+                    else
                     {
-                        // This is an expected case when the cancellation token was
-                        // triggered during an operation; no action is needed.
-                    }
-
-                    break;
-                }
-                else
-                {
-                    using (waitCancel = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-                    {
-                        if (maximumWaitTime.HasValue)
-                        {
-                            waitCancel.CancelAfter(maximumWaitTime.Value);
-                        }
-
                         try
                         {
+                            if (maximumWaitTime.HasValue)
+                            {
+                                if ((waitSource == null) || (waitSource.IsCancellationRequested))
+                                {
+                                    waitSource?.Dispose();
+                                    waitSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                                }
+
+                                waitSource.CancelAfter(maximumWaitTime.Value);
+                                waitToken = waitSource.Token;
+                            }
+
                             // Wait for an item to be available in the channel; if it becomes so, then
                             // reset the loop so that it can be read and emitted.
 
-                            if (await reader.WaitToReadAsync(waitCancel.Token).ConfigureAwait(false))
+                            if (await reader.WaitToReadAsync(waitToken).ConfigureAwait(false))
                             {
+                                waitSource?.CancelAfter(maximumDelay);
                                 continue;
                             }
                         }
-                        catch (Exception ex) when
-                            (ex is TaskCanceledException || ex is OperationCanceledException)
+                        catch (OperationCanceledException)
                         {
-                            // This is an expected case when the token was canceled or when the channel is
-                            // marked as final by the writer while waiting; no action is needed.
+                            // This is thrown when the wait token expires.  It may be caused by the maximum wait time
+                            // being exceeded or the main cancellation token being set.  Ignore this as an expected
+                            // case; if the iteration was canceled, it will be detected in the body of the loop and
+                            // appropriate action taken.
+
+                            waitSource?.Dispose();
+                            waitSource = null;
                         }
 
-                        // If the channel stopped waiting and no item was available, either the maximum wait time
-                        // elapsed or the iteration has been canceled.  If the wait token was set, but the main
-                        // cancellation token was not, then the wait time was exceeded and a default item needs to
-                        // be emitted.
+                        // If the wait token was set, but the main cancellation token was not, then the wait time was
+                        // exceeded and a default item needs to be emitted.
 
-                        if ((waitCancel.IsCancellationRequested) && (!cancellationToken.IsCancellationRequested))
+                        if ((waitToken.IsCancellationRequested) && (!cancellationToken.IsCancellationRequested))
                         {
                             yield return default;
                         }
                     }
                 }
+            }
+            finally
+            {
+                waitSource?.Dispose();
+            }
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
             }
 
             yield break;

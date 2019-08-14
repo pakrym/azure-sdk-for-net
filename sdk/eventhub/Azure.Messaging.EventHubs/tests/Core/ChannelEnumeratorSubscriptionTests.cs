@@ -222,7 +222,7 @@ namespace Azure.Messaging.EventHubs.Tests
         /// </summary>
         ///
         [Test]
-        public async Task EnumeratorRespectsTheCancellationToken()
+        public void EnumeratorRespectsTheCancellationToken()
         {
             var disposed = false;
             var channelIndex = -1;
@@ -253,20 +253,23 @@ namespace Azure.Messaging.EventHubs.Tests
 
             var subscription = new ChannelEnumerableSubscription<int>(mockReader.Object, null, disposeCallback, readCancellation.Token);
 
-            await foreach (var item in subscription)
+            Assert.That(async () =>
             {
-                ++readIndex;
-
-                if (readIndex >= maxReadItems)
+                await foreach (var item in subscription)
                 {
-                    readCancellation.Cancel();
-                }
+                    ++readIndex;
 
-                if (readIndex >= channelItems.Length)
-                {
-                    break;
+                    if (readIndex >= maxReadItems)
+                    {
+                        readCancellation.Cancel();
+                    }
+
+                    if (readIndex >= channelItems.Length)
+                    {
+                        break;
+                    }
                 }
-            }
+            }, Throws.InstanceOf<TaskCanceledException>(), "Task cancellation should result in an exception");
 
             Assert.That(readCancellation.Token.IsCancellationRequested, Is.True, "Cancellation should have been requested.");
             Assert.That(readIndex, Is.EqualTo(maxReadItems), "The number of items read should have stopped increasing when cancellation was requested.");
@@ -279,7 +282,7 @@ namespace Azure.Messaging.EventHubs.Tests
         /// </summary>
         ///
         [Test]
-        public async Task EnumeratorRespectsTheMaximumWaitTime()
+        public void EnumeratorRespectsTheMaximumWaitTime()
         {
             var disposed = false;
             var forcedAbort = false;
@@ -329,22 +332,25 @@ namespace Azure.Messaging.EventHubs.Tests
             var subscription = new ChannelEnumerableSubscription<int>(mockReader.Object, maxWaitTime, disposeCallback, readCancellation.Token);
             var stopWatch = Stopwatch.StartNew();
 
-            await foreach (var item in subscription)
+            Assert.That(async () =>
             {
-                ++iterateCount;
-
-                if (item != default)
+                await foreach (var item in subscription)
                 {
-                    ++readCount;
-                }
+                    ++iterateCount;
 
-                if (stopWatch.Elapsed > abortTimeout)
-                {
-                    readCancellation.Cancel();
-                    forcedAbort = true;
-                    break;
+                    if (item != default)
+                    {
+                        ++readCount;
+                    }
+
+                    if (stopWatch.Elapsed > abortTimeout)
+                    {
+                        readCancellation.Cancel();
+                        forcedAbort = true;
+                        break;
+                    }
                 }
-            }
+            }, Throws.InstanceOf<TaskCanceledException>(), "Task cancellation should result in an exception");
 
             stopWatch.Stop();
 
@@ -367,7 +373,7 @@ namespace Azure.Messaging.EventHubs.Tests
         /// </summary>
         ///
         [Test]
-        public async Task EnumeratorRespectsWhenThereIsNoMaximumWaitTime()
+        public void EnumeratorRespectsWhenThereIsNoMaximumWaitTime()
         {
             var disposed = false;
             var forcedAbort = false;
@@ -413,21 +419,24 @@ namespace Azure.Messaging.EventHubs.Tests
             var subscription = new ChannelEnumerableSubscription<int>(mockReader.Object, null, disposeCallback, readCancellation.Token);
             var stopWatch = Stopwatch.StartNew();
 
-            await foreach (var item in subscription)
+            Assert.That(async () =>
             {
-                ++iterateCount;
-
-                if (item != default)
+                await foreach (var item in subscription)
                 {
-                    ++readCount;
-                }
+                    ++iterateCount;
 
-                if (stopWatch.Elapsed > abortTimeout)
-                {
-                    forcedAbort = true;
-                    break;
+                    if (item != default)
+                    {
+                        ++readCount;
+                    }
+
+                    if (stopWatch.Elapsed > abortTimeout)
+                    {
+                        forcedAbort = true;
+                        break;
+                    }
                 }
-            }
+            }, Throws.InstanceOf<TaskCanceledException>(), "Task cancellation should result in an exception");
 
             stopWatch.Stop();
 
@@ -436,6 +445,152 @@ namespace Azure.Messaging.EventHubs.Tests
             Assert.That(readCount, Is.EqualTo(maxReadItems), "The number of items read should have stopped increasing when cancellation was requested.");
             Assert.That(iterateCount, Is.EqualTo(readCount), "There should have been no items returned; all iterations should have been reading actual values.");
             Assert.That(stopWatch.Elapsed, Is.EqualTo(cancelTimeout).Within(TimeSpan.FromSeconds(2)), "The elapsed time should be close to the duration set for the cancel timeout.");
+            Assert.That(disposed, Is.True, "The subscription should have been disposed.");
+        }
+
+        /// <summary>
+        ///     Verifies functionality of the subscription's
+        ///     enumerator.
+        /// </summary>
+        ///
+        [Test]
+        [TestCase(typeof(ChannelClosedException))]
+        [TestCase(typeof(ArithmeticException))]
+        [TestCase(typeof(IndexOutOfRangeException))]
+        public void EnumeratorPropagatesChannelExceptions(Type exceptionType)
+        {
+            var disposed = false;
+            var channelIndex = -1;
+            var readCount = 0;
+            var iterateCount = 0;
+            var maxReadItems = 2;
+            var currentItem = 0;
+            var channelItems = new[] { 1, 4, 7, 9 };
+            var mockReader = new Mock<ChannelReader<int>>();
+
+            Func<Task> disposeCallback = () =>
+            {
+                disposed = true;
+                return Task.CompletedTask;
+            };
+
+            var channelReadCallback = (ReturnOutParam<int>)((out int current) =>
+            {
+                if (channelIndex < channelItems.Length - 1)
+                {
+                    ++channelIndex;
+                }
+
+                current = channelItems[channelIndex];
+            });
+
+            mockReader
+              .SetupGet(reader => reader.Completion)
+              .Returns(new Task(async () => await Task.Delay(5)));
+
+            mockReader
+                .Setup(reader => reader.TryRead(out currentItem))
+                .Callback(channelReadCallback)
+                .Returns(() =>
+                {
+                    if (channelIndex < maxReadItems)
+                    {
+                        return true;
+                    };
+
+                    throw (Exception)Activator.CreateInstance(exceptionType);
+                });
+
+            // Create the subscription and deliberately do not dispose; the common usage will be in immediate foreach call,
+            // which should trigger disposal after iterating.
+
+            var readCancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var subscription = new ChannelEnumerableSubscription<int>(mockReader.Object, null, disposeCallback, readCancellation.Token);
+
+            Assert.That(async () =>
+            {
+                await foreach (var item in subscription)
+                {
+                    ++iterateCount;
+
+                    if (item != default)
+                    {
+                        ++readCount;
+                    }
+                }
+            }, Throws.TypeOf(exceptionType), "Exceptions while reading the channel should propagate.");
+
+            Assert.That(readCancellation.Token.IsCancellationRequested, Is.False, "Iteration should have ended normally");
+            Assert.That(disposed, Is.True, "The subscription should have been disposed.");
+        }
+
+        /// <summary>
+        ///     Verifies functionality of the subscription's
+        ///     enumerator.
+        /// </summary>
+        ///
+        [Test]
+        [TestCase(typeof(TaskCanceledException))]
+        [TestCase(typeof(OperationCanceledException))]
+        public void EnumeratorSurfacesChannelCancellation(Type exceptionType)
+        {
+            var disposed = false;
+            var channelIndex = -1;
+            var readCount = 0;
+            var iterateCount = 0;
+            var maxReadItems = 2;
+            var currentItem = 0;
+            var channelItems = new[] { 1, 4, 7, 9 };
+            var mockReader = new Mock<ChannelReader<int>>();
+
+            Func<Task> disposeCallback = () =>
+            {
+                disposed = true;
+                return Task.CompletedTask;
+            };
+
+            var channelReadCallback = (ReturnOutParam<int>)((out int current) =>
+            {
+                if (channelIndex < channelItems.Length - 1)
+                {
+                    ++channelIndex;
+                }
+
+                current = channelItems[channelIndex];
+            });
+
+            mockReader
+              .SetupGet(reader => reader.Completion)
+              .Returns(new Task(() => throw (Exception)Activator.CreateInstance(exceptionType)));
+
+            mockReader
+                .Setup(reader => reader.TryRead(out currentItem))
+                .Callback(channelReadCallback)
+                .Returns(() =>
+                {
+                    return channelIndex < maxReadItems;
+                });
+
+            // Create the subscription and deliberately do not dispose; the common usage will be in immediate foreach call,
+            // which should trigger disposal after iterating.
+
+            var readCancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var subscription = new ChannelEnumerableSubscription<int>(mockReader.Object, null, disposeCallback, readCancellation.Token);
+
+            Assert.That(async () =>
+            {
+                await foreach (var item in subscription)
+                {
+                    ++iterateCount;
+
+                    if (item != default)
+                    {
+                        ++readCount;
+                    }
+                }
+            }, Throws.InstanceOf<TaskCanceledException>(), "Cancellation of the read operation should have been surfaced.");
+
+            Assert.That(readCancellation.Token.IsCancellationRequested, Is.True, "Iteration should have ended normally");
             Assert.That(disposed, Is.True, "The subscription should have been disposed.");
         }
     }

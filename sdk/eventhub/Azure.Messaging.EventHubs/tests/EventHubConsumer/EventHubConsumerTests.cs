@@ -888,7 +888,7 @@ namespace Azure.Messaging.EventHubs.Tests
             var receivedEvents = new List<EventData>();
             var consecutiveEmptyCount = 0;
 
-            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(100));
 
             await foreach (var eventData in consumer.SubscribeToEvents(maxWaitTime, cancellation.Token))
             {
@@ -915,19 +915,55 @@ namespace Azure.Messaging.EventHubs.Tests
         /// </summary>
         ///
         [Test]
-        public async Task SubscribeExpectsTaskCanceledException()
+        [TestCase(typeof(ChannelClosedException))]
+        [TestCase(typeof(ArithmeticException))]
+        [TestCase(typeof(IndexOutOfRangeException))]
+        public void SubscribePropagagesException(Type exceptionType)
         {
-            var transportConsumer = new ReceiveCallbackTransportConsumerMock((_max, _time) => throw new TaskCanceledException());
+            var transportConsumer = new ReceiveCallbackTransportConsumerMock((_max, _time) => throw (Exception)Activator.CreateInstance(exceptionType));
             var consumer = new EventHubConsumer(transportConsumer, "dummy", EventHubConsumer.DefaultConsumerGroupName, "0", EventPosition.Latest, new EventHubConsumerOptions(), Mock.Of<EventHubRetryPolicy>());
             var receivedEvents = 0;
 
             using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-            await foreach (var eventData in consumer.SubscribeToEvents(cancellation.Token))
+            Assert.That(async () =>
             {
-                ++receivedEvents;
-                break;
-            }
+                await foreach (var eventData in consumer.SubscribeToEvents(cancellation.Token))
+                {
+                    ++receivedEvents;
+                    break;
+                }
+            }, Throws.TypeOf(exceptionType), "An exception during receive should be propagated by the iterator.");
+
+            Assert.That(cancellation.IsCancellationRequested, Is.False, "The iteration should have completed normally.");
+            Assert.That(receivedEvents, Is.EqualTo(0), "No events should have been received.");
+            Assert.That(GetIsPublishingActiveFlag(consumer), Is.False, "The consumer should no longer be publishing.");
+        }
+
+        /// <summary>
+        ///   Verifies functionality of the <see cref="EventHubConsumer.SubscribeToEvents" />
+        ///   method.
+        /// </summary>
+        ///
+        [Test]
+        [TestCase(typeof(TaskCanceledException))]
+        [TestCase(typeof(OperationCanceledException))]
+        public void SubscribeSurfacesCancelation(Type exceptionType)
+        {
+            var transportConsumer = new ReceiveCallbackTransportConsumerMock((_max, _time) => throw (Exception)Activator.CreateInstance(exceptionType));
+            var consumer = new EventHubConsumer(transportConsumer, "dummy", EventHubConsumer.DefaultConsumerGroupName, "0", EventPosition.Latest, new EventHubConsumerOptions(), Mock.Of<EventHubRetryPolicy>());
+            var receivedEvents = 0;
+
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+            Assert.That(async () =>
+            {
+                await foreach (var eventData in consumer.SubscribeToEvents(cancellation.Token))
+                {
+                    ++receivedEvents;
+                    break;
+                }
+            }, Throws.InstanceOf<TaskCanceledException>(), "Cancellation should be surfaced as a TaskCanceledException");
 
             Assert.That(cancellation.IsCancellationRequested, Is.False, "The iteration should have completed normally.");
             Assert.That(receivedEvents, Is.EqualTo(0), "No events should have been received.");
