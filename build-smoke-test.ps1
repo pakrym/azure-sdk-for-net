@@ -1,0 +1,2 @@
+dotnet pack .\sdk\identity\Azure.Identity\
+dotnet publish .\samples\SmokeTest\ -restore -f netcoreapp2.1 -o smokeTestApp -p:OverridePackageVersion=1.0.0-dev.20191015.1 -p:OverridePackageName=Azure.Identity -p:AdditionalRestoreSources=D:\github\azure\azure-sdk-for-net3\artifacts\packages\Debug\

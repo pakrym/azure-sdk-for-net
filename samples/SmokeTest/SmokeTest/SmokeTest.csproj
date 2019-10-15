@@ -29,4 +29,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Condition="'$(OverridePackageName)' != ''" Update="$(OverridePackageName)" Version="$(OverridePackageVersion)" />
+  </ItemGroup>
+
 </Project>
