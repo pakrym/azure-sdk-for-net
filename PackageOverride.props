@@ -1,0 +1,9 @@
+<Project>
+
+  <ItemGroup>
+    <PackageReference Update="Azure.Identity" Version="1.0.0-dev.20191015.1" />
+    <PackageReference Update="Azure.Messaging.EventHubs" Version="5.0.0--dev.20191015.1" />
+    <PackageReference Update="Azure.Security.Keyvault.Secrets" Version="4.0.0-dev.20191015.1" />
+  </ItemGroup>
+
+</Project>

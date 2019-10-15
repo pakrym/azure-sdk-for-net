@@ -33,4 +33,6 @@
     <PackageReference Condition="'$(OverridePackageName)' != ''" Update="$(OverridePackageName)" Version="$(OverridePackageVersion)" />
   </ItemGroup>
 
+  <Import Condition="'$(OverridePackagesProps)' != ''" Project="$(OverridePackagesProps)" />
+
 </Project>
