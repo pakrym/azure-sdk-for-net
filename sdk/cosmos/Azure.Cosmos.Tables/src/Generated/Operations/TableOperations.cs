@@ -38,7 +38,7 @@ namespace Azure.Cosmos.Tables
             this.clientDiagnostics = clientDiagnostics;
             this.pipeline = pipeline;
         }
-        internal HttpMessage CreateQueryRequest(string requestId, Enum0? format, int? top, string select, string filter)
+        internal HttpMessage CreateQueryRequest(string requestId, ResponseFormat? format, int? top, string select, string filter)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -78,7 +78,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="select"> Select expression using OData notation. Limits the columns on each record to just those requested, e.g. &quot;$select=PolicyAssignmentId, ResourceId&quot;. </param>
         /// <param name="filter"> OData filter expression. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<TableQueryResponse, QueryHeaders>> QueryAsync(string requestId, Enum0? format, int? top, string select, string filter, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<TableQueryResponse, QueryHeaders>> QueryAsync(string requestId, ResponseFormat? format, int? top, string select, string filter, CancellationToken cancellationToken = default)
         {
 
             using var scope = clientDiagnostics.CreateScope("TableOperations.Query");
@@ -113,7 +113,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="select"> Select expression using OData notation. Limits the columns on each record to just those requested, e.g. &quot;$select=PolicyAssignmentId, ResourceId&quot;. </param>
         /// <param name="filter"> OData filter expression. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<TableQueryResponse, QueryHeaders> Query(string requestId, Enum0? format, int? top, string select, string filter, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<TableQueryResponse, QueryHeaders> Query(string requestId, ResponseFormat? format, int? top, string select, string filter, CancellationToken cancellationToken = default)
         {
 
             using var scope = clientDiagnostics.CreateScope("TableOperations.Query");
@@ -141,7 +141,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateCreateRequest(string requestId, Enum0? format, TableProperties tableProperties)
+        internal HttpMessage CreateCreateRequest(string requestId, ResponseFormat? format, TableProperties tableProperties)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -171,7 +171,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="format"> Specifies the media type for the response. </param>
         /// <param name="tableProperties"> The Table properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<TableResponse, CreateHeaders>> CreateAsync(string requestId, Enum0? format, TableProperties tableProperties, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<TableResponse, CreateHeaders>> CreateAsync(string requestId, ResponseFormat? format, TableProperties tableProperties, CancellationToken cancellationToken = default)
         {
             if (tableProperties == null)
             {
@@ -208,7 +208,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="format"> Specifies the media type for the response. </param>
         /// <param name="tableProperties"> The Table properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<TableResponse, CreateHeaders> Create(string requestId, Enum0? format, TableProperties tableProperties, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<TableResponse, CreateHeaders> Create(string requestId, ResponseFormat? format, TableProperties tableProperties, CancellationToken cancellationToken = default)
         {
             if (tableProperties == null)
             {
@@ -322,7 +322,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateQueryEntitiesRequest(int? timeout, string requestId, Enum0? format, int? top, string select, string filter, string table)
+        internal HttpMessage CreateQueryEntitiesRequest(int? timeout, string requestId, ResponseFormat? format, int? top, string select, string filter, string table)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -370,7 +370,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="filter"> OData filter expression. </param>
         /// <param name="table"> The name of the table. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesHeaders>> QueryEntitiesAsync(int? timeout, string requestId, Enum0? format, int? top, string select, string filter, string table, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesHeaders>> QueryEntitiesAsync(int? timeout, string requestId, ResponseFormat? format, int? top, string select, string filter, string table, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -411,7 +411,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="filter"> OData filter expression. </param>
         /// <param name="table"> The name of the table. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesHeaders> QueryEntities(int? timeout, string requestId, Enum0? format, int? top, string select, string filter, string table, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesHeaders> QueryEntities(int? timeout, string requestId, ResponseFormat? format, int? top, string select, string filter, string table, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -443,7 +443,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateQueryEntitiesWithPartitionAndRowKeyRequest(int? timeout, string requestId, Enum0? format, string select, string filter, string table, string partitionKey, string rowKey)
+        internal HttpMessage CreateQueryEntitiesWithPartitionAndRowKeyRequest(int? timeout, string requestId, ResponseFormat? format, string select, string filter, string table, string partitionKey, string rowKey)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -492,7 +492,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="partitionKey"> The partition key of the entity. </param>
         /// <param name="rowKey"> The row key of the entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesWithPartitionAndRowKeyHeaders>> QueryEntitiesWithPartitionAndRowKeyAsync(int? timeout, string requestId, Enum0? format, string select, string filter, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesWithPartitionAndRowKeyHeaders>> QueryEntitiesWithPartitionAndRowKeyAsync(int? timeout, string requestId, ResponseFormat? format, string select, string filter, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -542,7 +542,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="partitionKey"> The partition key of the entity. </param>
         /// <param name="rowKey"> The row key of the entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesWithPartitionAndRowKeyHeaders> QueryEntitiesWithPartitionAndRowKey(int? timeout, string requestId, Enum0? format, string select, string filter, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<TableEntityQueryResponse, QueryEntitiesWithPartitionAndRowKeyHeaders> QueryEntitiesWithPartitionAndRowKey(int? timeout, string requestId, ResponseFormat? format, string select, string filter, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -582,7 +582,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateUpdateEntityRequest(int? timeout, string requestId, Enum0? format, string table, string partitionKey, string rowKey, IDictionary<string, object> tableEntityProperties)
+        internal HttpMessage CreateUpdateEntityRequest(int? timeout, string requestId, ResponseFormat? format, string table, string partitionKey, string rowKey, IDictionary<string, object> tableEntityProperties)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -632,7 +632,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="rowKey"> The row key of the entity. </param>
         /// <param name="tableEntityProperties"> The properties for the table entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<UpdateEntityHeaders>> UpdateEntityAsync(int? timeout, string requestId, Enum0? format, string table, string partitionKey, string rowKey, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<UpdateEntityHeaders>> UpdateEntityAsync(int? timeout, string requestId, ResponseFormat? format, string table, string partitionKey, string rowKey, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -677,7 +677,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="rowKey"> The row key of the entity. </param>
         /// <param name="tableEntityProperties"> The properties for the table entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<UpdateEntityHeaders> UpdateEntity(int? timeout, string requestId, Enum0? format, string table, string partitionKey, string rowKey, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<UpdateEntityHeaders> UpdateEntity(int? timeout, string requestId, ResponseFormat? format, string table, string partitionKey, string rowKey, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -713,7 +713,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateDeleteEntityRequest(int? timeout, string requestId, Enum0? format, string table, string partitionKey, string rowKey)
+        internal HttpMessage CreateDeleteEntityRequest(int? timeout, string requestId, ResponseFormat? format, string table, string partitionKey, string rowKey)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -752,7 +752,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="partitionKey"> The partition key of the entity. </param>
         /// <param name="rowKey"> The row key of the entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<DeleteEntityHeaders>> DeleteEntityAsync(int? timeout, string requestId, Enum0? format, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<DeleteEntityHeaders>> DeleteEntityAsync(int? timeout, string requestId, ResponseFormat? format, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -796,7 +796,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="partitionKey"> The partition key of the entity. </param>
         /// <param name="rowKey"> The row key of the entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<DeleteEntityHeaders> DeleteEntity(int? timeout, string requestId, Enum0? format, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<DeleteEntityHeaders> DeleteEntity(int? timeout, string requestId, ResponseFormat? format, string table, string partitionKey, string rowKey, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -832,7 +832,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateInsertEntityRequest(int? timeout, string requestId, Enum0? format, string table, IDictionary<string, object> tableEntityProperties)
+        internal HttpMessage CreateInsertEntityRequest(int? timeout, string requestId, ResponseFormat? format, string table, IDictionary<string, object> tableEntityProperties)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -875,7 +875,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="table"> The name of the table. </param>
         /// <param name="tableEntityProperties"> The properties for the table entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<IDictionary<string, object>, InsertEntityHeaders>> InsertEntityAsync(int? timeout, string requestId, Enum0? format, string table, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<IDictionary<string, object>, InsertEntityHeaders>> InsertEntityAsync(int? timeout, string requestId, ResponseFormat? format, string table, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
@@ -918,7 +918,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="table"> The name of the table. </param>
         /// <param name="tableEntityProperties"> The properties for the table entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<IDictionary<string, object>, InsertEntityHeaders> InsertEntity(int? timeout, string requestId, Enum0? format, string table, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<IDictionary<string, object>, InsertEntityHeaders> InsertEntity(int? timeout, string requestId, ResponseFormat? format, string table, IDictionary<string, object> tableEntityProperties, CancellationToken cancellationToken = default)
         {
             if (table == null)
             {
