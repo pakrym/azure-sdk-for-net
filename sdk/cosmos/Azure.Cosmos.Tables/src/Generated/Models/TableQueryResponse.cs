@@ -4,6 +4,7 @@
 #nullable disable
 
 using System.Collections.Generic;
+using Azure.Cosmos.Tables;
 
 namespace Azure.Cosmos.Tables.Models
 {
@@ -13,6 +14,6 @@ namespace Azure.Cosmos.Tables.Models
         /// <summary> The metadata response of the table. </summary>
         public string OdataMetadata { get; set; }
         /// <summary> List of tables. </summary>
-        public ICollection<TableResponseProperties> Value { get; set; }
+        public ICollection<TableItem> Value { get; set; }
     }
 }

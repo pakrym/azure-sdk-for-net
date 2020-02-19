@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 using Azure.Core;
+using Azure.Cosmos.Tables;
 
 namespace Azure.Cosmos.Tables.Models
 {
@@ -53,10 +54,10 @@ namespace Azure.Cosmos.Tables.Models
                     {
                         continue;
                     }
-                    result.Value = new List<TableResponseProperties>();
+                    result.Value = new List<TableItem>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        result.Value.Add(TableResponseProperties.DeserializeTableResponseProperties(item));
+                        result.Value.Add(TableItem.DeserializeTableItem(item));
                     }
                     continue;
                 }
@@ -91,11 +92,11 @@ namespace Azure.Cosmos.Tables.Models
                 value = (string)odatametadata;
             }
             result.OdataMetadata = value;
-            result.Value = new System.Collections.Generic.List<Azure.Cosmos.Tables.Models.TableResponseProperties>();
+            result.Value = new System.Collections.Generic.List<Azure.Cosmos.Tables.TableItem>();
             foreach (var e in element.Elements("TableResponseProperties"))
             {
-                TableResponseProperties value0 = default;
-                value0 = TableResponseProperties.DeserializeTableResponseProperties(e);
+                TableItem value0 = default;
+                value0 = TableItem.DeserializeTableItem(e);
                 result.Value.Add(value0);
             }
             return result;

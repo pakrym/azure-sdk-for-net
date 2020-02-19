@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -18,28 +19,16 @@ namespace Azure.Cosmos.Tables
     /// </summary>
     internal sealed class TablesSharedKeyPipelinePolicy : HttpPipelineSynchronousPolicy
     {
-        private class InternalStorageCredential: StorageSharedKeyCredential
-        {
-            public static InternalStorageCredential Instance = new InternalStorageCredential();
-            public InternalStorageCredential(): base(string.Empty, string.Empty)
-            {
-            }
-
-            public string GetSas(StorageSharedKeyCredential credential, string message)
-            {
-                return ComputeSasSignature(credential, message);
-            }
-        }
         /// <summary>
         /// Shared key credentials used to sign requests
         /// </summary>
-        private readonly StorageSharedKeyCredential _credentials;
+        private readonly TablesSharedKeyCredential _credentials;
 
         /// <summary>
         /// Create a new SharedKeyPipelinePolicy
         /// </summary>
         /// <param name="credentials">SharedKeyCredentials to authenticate requests.</param>
-        public TablesSharedKeyPipelinePolicy(StorageSharedKeyCredential credentials)
+        public TablesSharedKeyPipelinePolicy(TablesSharedKeyCredential credentials)
             => _credentials = credentials;
 
         /// <summary>
@@ -54,7 +43,7 @@ namespace Azure.Cosmos.Tables
             message.Request.Headers.SetValue(Constants.HeaderNames.Date, date);
 
             var stringToSign = BuildStringToSign(message);
-            var signature = InternalStorageCredential.Instance.GetSas(_credentials, stringToSign);
+            var signature = ComputeHMACSHA256(_credentials, stringToSign);
 
             var key = new AuthenticationHeaderValue(Constants.HeaderNames.SharedKey, _credentials.AccountName + ":" + signature).ToString();
             message.Request.Headers.SetValue(Constants.HeaderNames.Authorization, key);
@@ -131,5 +120,14 @@ namespace Azure.Cosmos.Tables
             return parameters;
         }
 
+        /// <summary>
+        /// Generates a base-64 hash signature string for an HTTP request or
+        /// for a SAS.
+        /// </summary>
+        /// <param name="credential">The credential to use.</param>
+        /// <param name="message">The message to sign.</param>
+        /// <returns>The signed message.</returns>
+        internal string ComputeHMACSHA256(TablesSharedKeyCredential credential, string message) =>
+            Convert.ToBase64String(new HMACSHA256(credential.AccountKeyValue).ComputeHash(Encoding.UTF8.GetBytes(message)));
     }
 }

@@ -3,10 +3,10 @@
 
 #nullable disable
 
-namespace Azure.Cosmos.Tables.Models
+namespace Azure.Cosmos.Tables
 {
     /// <summary> The properties for creating a table. </summary>
-    public partial class TableProperties
+    internal partial class TableCreationProperties
     {
         /// <summary> The name of the table to create. </summary>
         public string TableName { get; set; }

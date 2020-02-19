@@ -3,10 +3,10 @@
 
 #nullable disable
 
-namespace Azure.Cosmos.Tables.Models
+namespace Azure.Cosmos.Tables
 {
     /// <summary> The properties for the table response. </summary>
-    public partial class TableResponseProperties
+    public partial class TableItem
     {
         /// <summary> The name of the table. </summary>
         public string TableName { get; set; }

@@ -9,13 +9,15 @@ namespace Azure.Cosmos.Tables
     /// <summary>
     /// Represents a single row from the table
     /// </summary>
-    public class TableRow
+    public class TableEntity
     {
-        internal TableRow(IDictionary<string, object> values)
-        {
+        private readonly IDictionary<string, object> _values;
 
+        internal TableEntity(IDictionary<string, object> values)
+        {
+            _values = values;
         }
-        public TableRow(string partitionKey, string rowKey)
+        public TableEntity(string partitionKey, string rowKey)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;
@@ -27,20 +29,20 @@ namespace Azure.Cosmos.Tables
 
         public DateTimeOffset Timeptamp { get; set; }
 
-        public object this[string value]
+        public object this[string property]
         {
-            get { return default; }
-            set { return; }
+            get { return _values[property]; }
+            set { _values[property] = value; }
         }
 
-        public ColumnType GetColumnType(string value)
+        public PropertyType GetPropertyType(string value)
         {
             return default;
         }
 
         internal IDictionary<string, object> ToValueDictionary()
         {
-
+            return _values;
         }
     }
 }

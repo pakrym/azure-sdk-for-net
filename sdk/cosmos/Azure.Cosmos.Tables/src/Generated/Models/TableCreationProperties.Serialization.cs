@@ -8,9 +8,9 @@ using System.Xml;
 using System.Xml.Linq;
 using Azure.Core;
 
-namespace Azure.Cosmos.Tables.Models
+namespace Azure.Cosmos.Tables
 {
-    public partial class TableProperties : IUtf8JsonSerializable, IXmlSerializable
+    internal partial class TableCreationProperties : IUtf8JsonSerializable, IXmlSerializable
     {
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
@@ -22,9 +22,9 @@ namespace Azure.Cosmos.Tables.Models
             }
             writer.WriteEndObject();
         }
-        internal static TableProperties DeserializeTableProperties(JsonElement element)
+        internal static TableCreationProperties DeserializeTableCreationProperties(JsonElement element)
         {
-            TableProperties result = new TableProperties();
+            TableCreationProperties result = new TableCreationProperties();
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("TableName"))
@@ -50,10 +50,10 @@ namespace Azure.Cosmos.Tables.Models
             }
             writer.WriteEndElement();
         }
-        internal static TableProperties DeserializeTableProperties(XElement element)
+        internal static TableCreationProperties DeserializeTableCreationProperties(XElement element)
         {
-            TableProperties result = default;
-            result = new TableProperties(); string value = default;
+            TableCreationProperties result = default;
+            result = new TableCreationProperties(); string value = default;
             var tableName = element.Element("TableName");
             if (tableName != null)
             {

@@ -8,9 +8,9 @@ using System.Xml;
 using System.Xml.Linq;
 using Azure.Core;
 
-namespace Azure.Cosmos.Tables.Models
+namespace Azure.Cosmos.Tables
 {
-    public partial class TableResponse : IUtf8JsonSerializable, IXmlSerializable
+    internal partial class TableResponse : IUtf8JsonSerializable, IXmlSerializable
     {
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {

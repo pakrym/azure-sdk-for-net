@@ -141,7 +141,7 @@ namespace Azure.Cosmos.Tables
                 throw;
             }
         }
-        internal HttpMessage CreateCreateRequest(string requestId, ResponseFormat? format, TableProperties tableProperties)
+        internal HttpMessage CreateCreateRequest(string requestId, ResponseFormat? format, TableCreationProperties tableProperties)
         {
             var message = pipeline.CreateMessage();
             var request = message.Request;
@@ -171,7 +171,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="format"> Specifies the media type for the response. </param>
         /// <param name="tableProperties"> The Table properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async ValueTask<ResponseWithHeaders<TableResponse, CreateHeaders>> CreateAsync(string requestId, ResponseFormat? format, TableProperties tableProperties, CancellationToken cancellationToken = default)
+        public async ValueTask<ResponseWithHeaders<TableResponse, CreateHeaders>> CreateAsync(string requestId, ResponseFormat? format, TableCreationProperties tableProperties, CancellationToken cancellationToken = default)
         {
             if (tableProperties == null)
             {
@@ -208,7 +208,7 @@ namespace Azure.Cosmos.Tables
         /// <param name="format"> Specifies the media type for the response. </param>
         /// <param name="tableProperties"> The Table properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public ResponseWithHeaders<TableResponse, CreateHeaders> Create(string requestId, ResponseFormat? format, TableProperties tableProperties, CancellationToken cancellationToken = default)
+        public ResponseWithHeaders<TableResponse, CreateHeaders> Create(string requestId, ResponseFormat? format, TableCreationProperties tableProperties, CancellationToken cancellationToken = default)
         {
             if (tableProperties == null)
             {

@@ -3,7 +3,7 @@
 
 namespace Azure.Cosmos.Tables
 {
-    public enum ColumnType
+    public enum PropertyType
     {
         String,
         Binary,

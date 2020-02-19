@@ -3,10 +3,10 @@
 
 #nullable disable
 
-namespace Azure.Cosmos.Tables.Models
+namespace Azure.Cosmos.Tables
 {
     /// <summary> The response for a single table. </summary>
-    public partial class TableResponse : TableResponseProperties
+    internal partial class TableResponse : TableItem
     {
         /// <summary> The metadata response of the table. </summary>
         public string OdataMetadata { get; set; }
