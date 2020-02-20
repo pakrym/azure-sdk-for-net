@@ -41,7 +41,7 @@ namespace Azure.Core.Pipeline
         {
             ValueTask<string?> contentTask = ReadContentAsync(response, false);
             Debug.Assert(contentTask.IsCompleted);
-            return CreateRequestFailedExceptionWithContent(response, message, contentTask.GetAwaiter().GetResult(), errorCode, additionalInfo, innerException);
+            return CreateRequestFailedExceptionWithContent(response, message, contentTask.EnsureCompleted(), errorCode, additionalInfo, innerException);
         }
 
         public RequestFailedException CreateRequestFailedExceptionWithContent(
@@ -75,7 +75,7 @@ namespace Azure.Core.Pipeline
         {
             ValueTask<string> messageTask = CreateRequestFailedMessageAsync(response, message, errorCode, additionalInfo, false);
             Debug.Assert(messageTask.IsCompleted);
-            return messageTask.GetAwaiter().GetResult();
+            return messageTask.EnsureCompleted();
         }
 
         private async ValueTask<string> CreateRequestFailedMessageAsync(Response response, string? message, string? errorCode, IDictionary<string, string>? additionalInfo, bool async)

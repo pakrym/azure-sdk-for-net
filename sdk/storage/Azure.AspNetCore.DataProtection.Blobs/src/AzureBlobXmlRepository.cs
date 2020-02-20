@@ -53,7 +53,7 @@ namespace Azure.AspNetCore.DataProtection.Blobs
             // Shunt the work onto a ThreadPool thread so that it's independent of any
             // existing sync context or other potentially deadlock-causing items.
 
-            var elements = Task.Run(() => GetAllElementsAsync()).GetAwaiter().GetResult();
+            var elements = Task.Run(() => GetAllElementsAsync()).EnsureCompleted();
             return new ReadOnlyCollection<XElement>(elements);
         }
 
@@ -68,7 +68,7 @@ namespace Azure.AspNetCore.DataProtection.Blobs
             // Shunt the work onto a ThreadPool thread so that it's independent of any
             // existing sync context or other potentially deadlock-causing items.
 
-            Task.Run(() => StoreElementAsync(element)).GetAwaiter().GetResult();
+            Task.Run(() => StoreElementAsync(element)).EnsureCompleted();
         }
 
         private XDocument CreateDocumentFromBlob(byte[] blob)

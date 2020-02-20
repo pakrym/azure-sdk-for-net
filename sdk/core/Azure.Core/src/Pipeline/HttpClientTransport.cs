@@ -50,7 +50,7 @@ namespace Azure.Core.Pipeline
         public override void Process(HttpMessage message)
         {
             // Intentionally blocking here
-            ProcessAsync(message).GetAwaiter().GetResult();
+            ProcessAsync(message).EnsureCompleted();
         }
 
         /// <inheritdoc />
@@ -371,7 +371,7 @@ namespace Azure.Core.Pipeline
 
                     if (contentTask.IsCompleted)
                     {
-                        _contentStream = contentTask.GetAwaiter().GetResult();
+                        _contentStream = contentTask.EnsureCompleted();
                     }
                     else
                     {
@@ -475,7 +475,7 @@ namespace Azure.Core.Pipeline
                 {
                     if (_contentStream == null)
                     {
-                        return EnsureStreamAsync().GetAwaiter().GetResult();
+                        return EnsureStreamAsync().EnsureCompleted();
                     }
 
                     return _contentStream;

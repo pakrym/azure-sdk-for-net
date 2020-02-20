@@ -261,6 +261,6 @@ namespace Azure.Storage.Blobs.Specialized
             CancellationToken cancellationToken) =>
             async ?
                 await reader.ReadNextSectionAsync(cancellationToken).ConfigureAwait(false) :
-                reader.ReadNextSectionAsync(cancellationToken).GetAwaiter().GetResult(); // #7972: Decide if we need a proper sync API here
+                reader.ReadNextSectionAsync(cancellationToken).EnsureCompleted(); // #7972: Decide if we need a proper sync API here
     }
 }

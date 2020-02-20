@@ -134,7 +134,7 @@ namespace Azure.Core.Pipeline
                     {
                         Task task = RetryAsync(e, false);
                         Debug.Assert(task.IsCompleted);
-                        task.GetAwaiter().GetResult();
+                        task.EnsureCompleted();
                     }
                 }
             }

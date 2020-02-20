@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Azure.Core.Pipeline
+namespace Azure.Core
 {
     internal static class TaskExtensions
     {

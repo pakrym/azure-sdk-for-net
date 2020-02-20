@@ -77,7 +77,7 @@ namespace Azure.Identity
         /// <returns>An <see cref="AccessToken"/> which can be used to authenticate service client calls, or a default <see cref="AccessToken"/> if no managed identity is available.</returns>
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken = default)
         {
-            return GetTokenImplAsync(false, requestContext, cancellationToken).GetAwaiter().GetResult();
+            return GetTokenImplAsync(false, requestContext, cancellationToken).EnsureCompleted();
         }
 
         private async ValueTask<AccessToken> GetTokenImplAsync(bool isAsync, TokenRequestContext requestContext, CancellationToken cancellationToken)

@@ -74,7 +74,7 @@ namespace Azure.Identity
         /// <returns>The first <see cref="AccessToken"/> returned by the specified sources. Any credential which raises a <see cref="CredentialUnavailableException"/> will be skipped.</returns>
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken = default)
         {
-            return GetTokenAsync(false, requestContext, cancellationToken).GetAwaiter().GetResult();
+            return GetTokenAsync(false, requestContext, cancellationToken).EnsureCompleted();
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Azure.Identity
                 }
                 else
                 {
-                    token = isAsync ? await GetTokenFromSourcesAsync(isAsync, requestContext, cancellationToken).ConfigureAwait(false) : GetTokenFromSourcesAsync(isAsync, requestContext, cancellationToken).GetAwaiter().GetResult();
+                    token = isAsync ? await GetTokenFromSourcesAsync(isAsync, requestContext, cancellationToken).ConfigureAwait(false) : GetTokenFromSourcesAsync(isAsync, requestContext, cancellationToken).EnsureCompleted();
                 }
 
                 return scope.Succeeded(token);
