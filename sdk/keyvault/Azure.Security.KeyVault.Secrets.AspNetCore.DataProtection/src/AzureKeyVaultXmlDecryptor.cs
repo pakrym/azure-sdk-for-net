@@ -24,7 +24,7 @@ namespace Azure.Security.KeyVault.Secrets.AspNetCore.DataProtection
 
         public XElement Decrypt(XElement encryptedElement)
         {
-            return DecryptAsync(encryptedElement).EnsureCompleted();
+            return DecryptAsync(encryptedElement).GetAwaiter().GetResult();
         }
 
         private async Task<XElement> DecryptAsync(XElement encryptedElement)

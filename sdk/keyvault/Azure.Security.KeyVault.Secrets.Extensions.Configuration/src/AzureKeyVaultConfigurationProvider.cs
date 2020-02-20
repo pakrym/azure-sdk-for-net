@@ -49,7 +49,7 @@ namespace Azure.Security.KeyVault.Secrets.Extensions.Configuration
         /// <summary>
         /// Load secrets into this provider.
         /// </summary>
-        public override void Load() => LoadAsync().ConfigureAwait(false).EnsureCompleted();
+        public override void Load() => LoadAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         private async Task PollForSecretChangesAsync()
         {
