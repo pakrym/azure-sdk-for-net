@@ -170,7 +170,8 @@ namespace Azure.Core.Testing
         protected virtual bool IsEquivalentRequest(RecordEntry entry, RecordEntry otherEntry) =>
             entry.RequestMethod == otherEntry.RequestMethod &&
             IsEquivalentUri(entry.RequestUri, otherEntry.RequestUri) &&
-            CompareHeaderDictionaries(entry.Request.Headers, otherEntry.Request.Headers, VolatileHeaders) == 0;
+            CompareHeaderDictionaries(entry.Request.Headers, otherEntry.Request.Headers, VolatileHeaders) == 0 &&
+            IsBodyEquivalent(entry.Request, otherEntry.Request);
 
         private static bool AreUrisSame(string entryUri, string otherEntryUri) =>
             // Some versions of .NET behave differently when calling new Uri("...")
@@ -189,13 +190,13 @@ namespace Azure.Core.Testing
             return
                 entry.StatusCode == otherEntry.StatusCode &&
                 entryHeaders.SequenceEqual(otherEntryHeaders, new HeaderComparer()) &&
-                IsBodyEquivalent(entry, otherEntry);
+                IsBodyEquivalent(entry.Response, otherEntry.Response);
         }
 
-        protected virtual bool IsBodyEquivalent(RecordEntry record, RecordEntry otherRecord)
+        protected virtual bool IsBodyEquivalent(RecordEntryMessage record, RecordEntryMessage otherRecord)
         {
-            return (record.Response.Body ?? Array.Empty<byte>()).AsSpan()
-                .SequenceEqual((otherRecord.Response.Body ?? Array.Empty<byte>()));
+            return (record.Body ?? Array.Empty<byte>()).AsSpan()
+                .SequenceEqual((otherRecord.Body ?? Array.Empty<byte>()));
         }
 
         private string GenerateException(RecordEntry request, RecordEntry bestScoreEntry)

@@ -23,10 +23,10 @@ namespace Azure.Data.AppConfiguration.Tests
             VolatileResponseHeaders.Add("Sync-Token");
         }
 
-        protected override bool IsBodyEquivalent(RecordEntry record, RecordEntry otherRecord)
+        protected override bool IsBodyEquivalent(RecordEntryMessage record, RecordEntryMessage otherRecord)
         {
-            byte[] body = record.Response.Body ?? Array.Empty<byte>();
-            byte[] otherBody = record.Response.Body ?? Array.Empty<byte>();
+            byte[] body = record.Body ?? Array.Empty<byte>();
+            byte[] otherBody = record.Body ?? Array.Empty<byte>();
 
             if (body.SequenceEqual(otherBody))
                 return true;

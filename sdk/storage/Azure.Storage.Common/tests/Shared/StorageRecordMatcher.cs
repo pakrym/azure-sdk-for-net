@@ -121,7 +121,7 @@ namespace Azure.Storage.Test.Shared
         /// <param name="entry">The first response body.</param>
         /// <param name="otherEntry">The second response body.</param>
         /// <returns>Whether the response bodies are equivalent.</returns>
-        protected override bool IsBodyEquivalent(RecordEntry entry, RecordEntry otherEntry) =>
+        protected override bool IsBodyEquivalent(RecordEntryMessage entry, RecordEntryMessage otherEntry) =>
             AreSimilar(ParseBody(entry), ParseBody(otherEntry));
 
         /// <summary>
@@ -203,12 +203,12 @@ namespace Azure.Storage.Test.Shared
         /// <returns>
         /// The response body in our general structured format.
         /// </returns>
-        private static object ParseBody(RecordEntry entry)
+        private static object ParseBody(RecordEntryMessage entry)
         {
             // Switch on the Content-Type to check for XML or JSON
-            var body = entry.Response.Body ?? Array.Empty<byte>();
+            var body = entry.Body ?? Array.Empty<byte>();
             if (body.Length > 0 &&
-                entry.Response.Headers.TryGetValue("Content-Type", out var types) &&
+                entry.Headers.TryGetValue("Content-Type", out var types) &&
                 types?.Length > 0)
             {
                 if (types.Any(t => t.Contains("xml")))
