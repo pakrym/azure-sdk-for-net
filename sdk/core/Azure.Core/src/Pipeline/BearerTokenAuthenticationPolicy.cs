@@ -123,7 +123,7 @@ namespace Azure.Core.Pipeline
                     else if (_headerTask.IsCompleted && now >= _headerTask.Result.RefreshOn)
                     {
                         backgroundRefresh = true;
-                        _headerTask = new ValueTask<TokenInfo>(_headerTask.Result.WithNewRefreshTime(_tokenRefreshRetryTimeout));
+                        _headerTask = new ValueTask<TokenInfo>(_headerTask.Result.WithNewRefreshTime(now + _tokenRefreshRetryTimeout));
                     }
 
                     pendingTask = _headerTask;
@@ -208,9 +208,9 @@ namespace Azure.Core.Pipeline
                     RefreshOn = refreshOn;
                 }
 
-                public TokenInfo WithNewRefreshTime(TimeSpan tokenRefreshRetryTimeout)
+                public TokenInfo WithNewRefreshTime(DateTimeOffset refreshOn)
                 {
-                    return new TokenInfo(HeaderValue, ExpiresOn, RefreshOn + tokenRefreshRetryTimeout);
+                    return new TokenInfo(HeaderValue, ExpiresOn, refreshOn);
                 }
             }
         }
