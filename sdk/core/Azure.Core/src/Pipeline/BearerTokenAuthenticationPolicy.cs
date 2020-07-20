@@ -82,6 +82,7 @@ namespace Azure.Core.Pipeline
             private readonly string[] _scopes;
 
             private ValueTask<TokenInfo> _headerTask;
+            private Task<TokenInfo>? _backgroundRefreshTask;
 
             public AccessTokenCache(TimeSpan tokenRefreshOffset, TimeSpan tokenRefreshRetryTimeout, TokenCredential credential, string[] scopes)
             {
@@ -108,7 +109,6 @@ namespace Azure.Core.Pipeline
 
                 ValueTask<TokenInfo> pendingTask;
                 TaskCompletionSource<TokenInfo>? inlineRefreshTaskCompletionSource = null;
-                bool backgroundRefresh = false;
 
                 lock (_syncObj)
                 {
@@ -116,14 +116,34 @@ namespace Azure.Core.Pipeline
                     if (_headerTask == null ||
                         (_headerTask.IsCompleted && now >= _headerTask.Result.ExpiresOn))
                     {
-                        inlineRefreshTaskCompletionSource = new TaskCompletionSource<TokenInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
-                        _headerTask = new ValueTask<TokenInfo>(inlineRefreshTaskCompletionSource.Task);
+                        // Do we have a running background refresh?
+                        // If so promote it to be the thing we await on
+                        if (_backgroundRefreshTask?.IsCompleted == false)
+                        {
+                            _headerTask = new ValueTask<TokenInfo>(_backgroundRefreshTask);
+                        }
+                        else
+                        {
+                            // Start a new inline refresh
+                            inlineRefreshTaskCompletionSource = new TaskCompletionSource<TokenInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
+                            _headerTask = new ValueTask<TokenInfo>(inlineRefreshTaskCompletionSource.Task);
+                        }
                     }
                     // If it's time to try a background refresh update the next refresh time
-                    else if (_headerTask.IsCompleted && now >= _headerTask.Result.RefreshOn)
+                    else if (
+                        _headerTask.IsCompleted &&
+                        now >= _headerTask.Result.RefreshOn &&
+                        // Make sure we don't start more than one background task at a time
+                        (_backgroundRefreshTask == null || _backgroundRefreshTask.IsCompleted))
                     {
-                        backgroundRefresh = true;
                         _headerTask = new ValueTask<TokenInfo>(_headerTask.Result.WithNewRefreshTime(now + _tokenRefreshRetryTimeout));
+                        _backgroundRefreshTask = Task.Run(async () =>
+                        {
+                            var getTokenTask = GetHeaderValueFromCredentialAsync(message, async);
+                            var token = await getTokenTask.ConfigureAwait(false);
+                            UpdateHeaderValue(getTokenTask);
+                            return token;
+                        });
                     }
 
                     pendingTask = _headerTask;
@@ -141,24 +161,6 @@ namespace Azure.Core.Pipeline
                     {
                         inlineRefreshTaskCompletionSource.SetException(e);
                     }
-                }
-
-                // It's time to try and refresh the token in the background
-                if (backgroundRefresh)
-                {
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            var getTokenTask = GetHeaderValueFromCredentialAsync(message, async);
-                            await getTokenTask.ConfigureAwait(false);
-                            UpdateHeaderValue(getTokenTask);
-                        }
-                        catch (Exception)
-                        {
-                            // Log and suppress
-                        }
-                    });
                 }
 
                 // Fast path
