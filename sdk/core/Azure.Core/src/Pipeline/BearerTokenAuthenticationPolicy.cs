@@ -75,7 +75,6 @@ namespace Azure.Core.Pipeline
 
         private class AccessTokenCache
         {
-
             private readonly object _syncObj = new object();
             private readonly TimeSpan _tokenRefreshOffset;
             private readonly TimeSpan _tokenRefreshRetryTimeout;
@@ -100,7 +99,7 @@ namespace Azure.Core.Pipeline
                     ? await _credential.GetTokenAsync(requestContext, message.CancellationToken).ConfigureAwait(false)
                     : _credential.GetToken(requestContext, message.CancellationToken);
 
-                return new TokenInfo("Bearer " + token.Token, token.ExpiresOn, DateTimeOffset.Now + _tokenRefreshOffset) ;
+                return new TokenInfo("Bearer " + token.Token, token.ExpiresOn, token.ExpiresOn - _tokenRefreshOffset) ;
             }
 
             public async ValueTask<string> GetHeaderValueAsync(HttpMessage message, bool async)
