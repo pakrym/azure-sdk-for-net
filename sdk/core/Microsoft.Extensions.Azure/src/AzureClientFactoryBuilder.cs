@@ -91,21 +91,7 @@ namespace Microsoft.Extensions.Azure
 
         IAzureClientBuilder<TClient, TOptions> IAzureClientFactoryBuilderWithCredential.RegisterClientFactory<TClient, TOptions>(Func<TOptions, TokenCredential, TClient> clientFactory, bool requiresCredential)
         {
-            var clientRegistration = new ClientRegistration<TClient, TOptions>(DefaultClientName, clientFactory);
-            clientRegistration.RequiresTokenCredential = requiresCredential;
-
-            _serviceCollection.AddSingleton(clientRegistration);
-
-            _serviceCollection.TryAddSingleton(typeof(IConfigureOptions<AzureClientCredentialOptions<TClient>>), typeof(DefaultCredentialClientOptionsSetup<TClient>));
-            _serviceCollection.TryAddSingleton(typeof(IOptionsMonitor<TOptions>), typeof(ClientOptionsMonitor<TClient, TOptions>));
-            _serviceCollection.TryAddSingleton(typeof(ClientOptionsFactory<TClient, TOptions>), typeof(ClientOptionsFactory<TClient, TOptions>));
-            _serviceCollection.TryAddSingleton(typeof(IConfigureOptions<TOptions>), typeof(DefaultClientOptionsSetup<TOptions>));
-            _serviceCollection.TryAddSingleton(typeof(IAzureClientFactory<TClient>), typeof(AzureClientFactory<TClient, TOptions>));
-            _serviceCollection.TryAddSingleton(
-                typeof(TClient),
-                provider => provider.GetService<IAzureClientFactory<TClient>>().CreateClient(DefaultClientName));
-
-            return new AzureClientBuilder<TClient, TOptions>(clientRegistration, _serviceCollection);
+            return RegisterClientFactory<TClient, TOptions>((options, credential, serviceProvider) => clientFactory(options, credential), requiresCredential);
         }
 
         /// <summary>
@@ -127,6 +113,46 @@ namespace Microsoft.Extensions.Azure
         {
             _serviceCollection.Configure<AzureClientsGlobalOptions>(options => options.CredentialFactory = tokenCredentialFactory);
             return this;
+        }
+
+        public IAzureClientBuilder<TClient, TOptions> AddClient<TClient, TOptions>(Func<TOptions, TClient> factory) where TOptions : class
+        {
+            return RegisterClientFactory<TClient, TOptions>((options, credential, serviceProvider) => factory(options), false);
+        }
+
+        public IAzureClientBuilder<TClient, TOptions> AddClient<TClient, TOptions>(Func<TokenCredential, TOptions, TClient> factory) where TOptions : class
+        {
+            return RegisterClientFactory<TClient, TOptions>((options, credential, serviceProvider) => factory(credential, options), true);
+        }
+
+        public IAzureClientBuilder<TClient, TOptions> AddClient<TClient, TOptions>(Func<TOptions, IServiceProvider, TClient> factory) where TOptions : class
+        {
+            return RegisterClientFactory<TClient, TOptions>((options, credential, serviceProvider) => factory(options, serviceProvider), false);
+        }
+
+        public IAzureClientBuilder<TClient, TOptions> AddClient<TClient, TOptions>(Func<TokenCredential, TOptions, IServiceProvider, TClient> factory) where TOptions : class
+        {
+            return RegisterClientFactory<TClient, TOptions>((options, credential, serviceProvider) => factory(credential, options, serviceProvider), false);
+        }
+
+
+        private IAzureClientBuilder<TClient, TOptions> RegisterClientFactory<TClient, TOptions>(Func<TOptions, TokenCredential, IServiceProvider, TClient> clientFactory, bool requiresCredential) where TOptions : class
+        {
+            var clientRegistration = new ClientRegistration<TClient, TOptions>(DefaultClientName, clientFactory);
+            clientRegistration.RequiresTokenCredential = requiresCredential;
+
+            _serviceCollection.AddSingleton(clientRegistration);
+
+            _serviceCollection.TryAddSingleton(typeof(IConfigureOptions<AzureClientCredentialOptions<TClient>>), typeof(DefaultCredentialClientOptionsSetup<TClient>));
+            _serviceCollection.TryAddSingleton(typeof(IOptionsMonitor<TOptions>), typeof(ClientOptionsMonitor<TClient, TOptions>));
+            _serviceCollection.TryAddSingleton(typeof(ClientOptionsFactory<TClient, TOptions>), typeof(ClientOptionsFactory<TClient, TOptions>));
+            _serviceCollection.TryAddSingleton(typeof(IConfigureOptions<TOptions>), typeof(DefaultClientOptionsSetup<TOptions>));
+            _serviceCollection.TryAddSingleton(typeof(IAzureClientFactory<TClient>), typeof(AzureClientFactory<TClient, TOptions>));
+            _serviceCollection.TryAddSingleton(
+                typeof(TClient),
+                provider => provider.GetService<IAzureClientFactory<TClient>>().CreateClient(DefaultClientName));
+
+            return new AzureClientBuilder<TClient, TOptions>(clientRegistration, _serviceCollection);
         }
     }
 }

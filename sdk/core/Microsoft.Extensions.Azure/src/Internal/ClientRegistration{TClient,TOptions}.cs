@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Azure
         public object Version { get; set; }
         public bool RequiresTokenCredential { get; set; }
 
-        private readonly Func<TOptions, TokenCredential, TClient> _factory;
+        private readonly Func<TOptions, TokenCredential, IServiceProvider, TClient> _factory;
 
         private readonly object _cacheLock = new object();
 
@@ -21,13 +21,13 @@ namespace Microsoft.Extensions.Azure
 
         private ExceptionDispatchInfo _cachedException;
 
-        public ClientRegistration(string name, Func<TOptions, TokenCredential, TClient> factory)
+        public ClientRegistration(string name, Func<TOptions, TokenCredential, IServiceProvider, TClient> factory)
         {
             Name = name;
             _factory = factory;
         }
 
-        public TClient GetClient(TOptions options, TokenCredential tokenCredential)
+        public TClient GetClient(TOptions options, TokenCredential tokenCredential, IServiceProvider serviceProvider)
         {
             _cachedException?.Throw();
 
@@ -53,7 +53,7 @@ namespace Microsoft.Extensions.Azure
 
                 try
                 {
-                    _cachedClient = _factory(options, tokenCredential);
+                    _cachedClient = _factory(options, tokenCredential, serviceProvider);
                 }
                 catch (Exception e)
                 {
