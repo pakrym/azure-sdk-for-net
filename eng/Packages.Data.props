@@ -139,6 +139,8 @@
 
   <!-- Packages intended for Extensions libraries only -->
   <ItemGroup Condition="'$(IsExtensionClientLibrary)' == 'true'">
+    <PackageReference Update="Microsoft.Azure.WebJobs" Version="3.0.0" />
+    <PackageReference Update="Microsoft.Azure.EventGrid" Version="3.2.0" />
     <PackageReference Update="Microsoft.AspNetCore.DataProtection" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="2.1.0" />
