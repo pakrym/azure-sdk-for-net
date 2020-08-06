@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 
 using Azure.Core.TestFramework;
-using Azure.Management.Resources;
+using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 
 namespace Azure.ResourceManager.EventHubs.Tests
@@ -60,7 +61,7 @@ namespace Azure.ResourceManager.EventHubs.Tests
         {
             if (Mode != RecordedTestMode.Playback)
             {
-                Task.Delay(seconds * 1000);
+                Thread.Sleep(seconds * 1000);
             }
         }
     }
