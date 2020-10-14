@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using Azure.Core.Pipeline;
 using Azure.Core.Tests.TestFramework;
 
@@ -57,7 +56,7 @@ namespace Azure.Core.TestFramework
             }
         }
 
-        public RecordedTestMode Mode { get; }
+        private RecordedTestMode Mode { get; }
 
         private readonly AsyncLocal<EntryRecordModel> _disableRecording = new AsyncLocal<EntryRecordModel>();
 
@@ -67,7 +66,6 @@ namespace Azure.Core.TestFramework
 
         private readonly RecordMatcher _matcher;
 
-        private readonly RecordSession _session;
 
         private RecordSession _previousSession;
 
@@ -97,7 +95,7 @@ namespace Azure.Core.TestFramework
                                 _random = new TestRandom(Mode);
                                 seed = _random.Next();
                             }
-                            _session.Variables[RandomSeedVariableKey] = seed.ToString();
+                            this.SetVariable(RandomSeedVariableKey, seed.ToString());
                             _random = new TestRandom(Mode, seed);
                             break;
                         case RecordedTestMode.Playback:
@@ -108,7 +106,7 @@ namespace Azure.Core.TestFramework
                             }
                             else
                             {
-                                _random = new TestRandom(Mode, int.Parse(_session.Variables[RandomSeedVariableKey]));
+                                _random = new TestRandom(Mode, int.Parse(GetVariable(RandomSeedVariableKey, 0)));
                             }
                             break;
                         default:
@@ -144,10 +142,10 @@ namespace Azure.Core.TestFramework
                             // a number of auth mechanisms are time sensitive and will require
                             // values in the present when re-recording
                             _now = DateTimeOffset.Now;
-                            _session.Variables[DateTimeOffsetNowVariableKey] = _now.Value.ToString("O"); // Use the "Round-Trip Format"
+                            SetVariable(DateTimeOffsetNowVariableKey, _now.Value.ToString("O")); // Use the "Round-Trip Format"
                             break;
                         case RecordedTestMode.Playback:
-                            _now = DateTimeOffset.Parse(_session.Variables[DateTimeOffsetNowVariableKey]);
+                            _now = DateTimeOffset.Parse(GetVariable(DateTimeOffsetNowVariableKey, null));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -170,9 +168,9 @@ namespace Azure.Core.TestFramework
             return RecordSession.Deserialize(jsonDocument.RootElement);
         }
 
-        public void Dispose(bool save)
+        public void Dispose()
         {
-            if (Mode == RecordedTestMode.Record && save)
+            if (Mode == RecordedTestMode.Record)
             {
                 var directory = Path.GetDirectoryName(_sessionFile);
                 Directory.CreateDirectory(directory);
@@ -191,11 +189,6 @@ namespace Azure.Core.TestFramework
                 _session.Serialize(utf8JsonWriter);
                 utf8JsonWriter.Flush();
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
 
         public HttpPipelineTransport CreateTransport(HttpPipelineTransport currentTransport)

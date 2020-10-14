@@ -134,7 +134,7 @@ namespace Azure.Core.TestFramework
 #if DEBUG
             save |= SaveDebugRecordingsOnFailure;
 #endif
-            Recording?.Dispose(save);
+            Recording?.Dispose();
         }
     }
 }

@@ -296,7 +296,7 @@ namespace Azure.Core.Tests
             TestRecording recording = new TestRecording(RecordedTestMode.Record, tempFile, sanitizer, new RecordMatcher());
 
             recording.SetVariable("A", "secret");
-            recording.Dispose(true);
+            recording.Dispose();
 
             var text = File.ReadAllText(tempFile);
 
@@ -376,7 +376,7 @@ namespace Azure.Core.Tests
                 transport.Process(message);
             }
 
-            recording.Dispose(true);
+            recording.Dispose();
             var text = File.ReadAllText(tempFile);
 
             StringAssert.DoesNotContain(body, text);
