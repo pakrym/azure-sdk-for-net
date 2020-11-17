@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 #nullable enable
+#pragma warning disable SA1600 // All members should be documented
 
 namespace Azure.Core
 {

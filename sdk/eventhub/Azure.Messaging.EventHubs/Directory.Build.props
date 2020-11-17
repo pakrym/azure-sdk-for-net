@@ -13,4 +13,9 @@
 
   <!-- Import the common SDK build properties. -->
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., Directory.Build.props))\Directory.Build.props" />
+  
+  <PropertyGroup Condition="'$(IsShippingClientLibrary)' == 'true'">
+    <NoWarn>$(NoWarn.Replace("SA1600;", ""))</NoWarn>
+  </PropertyGroup>
+
 </Project>

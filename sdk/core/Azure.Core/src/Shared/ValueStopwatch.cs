@@ -6,6 +6,8 @@
 using System;
 using System.Diagnostics;
 
+#pragma warning disable SA1600 // All members should be documented
+
 namespace Azure.Core.Diagnostics
 {
     // https://github.com/dotnet/aspnetcore/blob/master/src/Shared/ValueStopwatch/ValueStopwatch.cs

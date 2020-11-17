@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #nullable enable
+#pragma warning disable SA1600 // All members should be documented
 
 using System;
 using System.Collections.Generic;

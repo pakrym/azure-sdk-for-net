@@ -25,6 +25,7 @@
       CA2231; <!-- Override Equality operators -->
       CA2225; <!-- Provide alternative to implicit operators -->
       CA1714; <!-- Flags should have plural names -->
+      SA1600; <!-- Elements should be documented -->
     </NoWarn>
 
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

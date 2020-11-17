@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 
 #nullable enable
+#pragma warning disable SA1600 // All members should be documented
 
 namespace Azure.Core.Pipeline
 {
