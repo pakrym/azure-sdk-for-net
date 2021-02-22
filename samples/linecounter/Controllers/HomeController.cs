@@ -67,7 +67,7 @@ namespace LineCounter.Controllers
         {
             var properties = await _blobContainerClient.GetBlobClient(name).GetPropertiesAsync();
             properties.Value.Metadata.TryGetValue("whitespacecount", out var count);
-            await _publisherClient.SendEventsAsync(new CloudEvent[] { new CloudEvent("https://www.contoso.com/LineCounter", "LineCounter.Status.Viewed", name) });
+            //await _publisherClient.SendEventsAsync(new CloudEvent[] { new CloudEvent("https://www.contoso.com/LineCounter", "LineCounter.Status.Viewed", name) });
             return count ?? "-1";
         }
     }
