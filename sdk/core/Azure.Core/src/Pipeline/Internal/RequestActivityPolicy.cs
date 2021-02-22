@@ -18,6 +18,7 @@ namespace Azure.Core.Pipeline
         private const string RequestIdHeaderName = "Request-Id";
 
         private static readonly DiagnosticListener s_diagnosticSource = new DiagnosticListener("Azure.Core");
+        private static readonly object? s_activitySource = ActivityExtensions.CreateActivitySource("Azure.Core.Http");
 
         public RequestActivityPolicy(bool isDistributedTracingEnabled, string? resourceProviderNamespace)
         {
@@ -27,8 +28,7 @@ namespace Azure.Core.Pipeline
 
         public override ValueTask ProcessAsync(HttpMessage message, ReadOnlyMemory<HttpPipelinePolicy> pipeline)
         {
-            if (!_isDistributedTracingEnabled ||
-                !s_diagnosticSource.IsEnabled())
+            if (!ShouldCreateActivity)
             {
                 return ProcessNextAsync(message, pipeline, true);
             }
@@ -38,8 +38,7 @@ namespace Azure.Core.Pipeline
 
         public override void Process(HttpMessage message, ReadOnlyMemory<HttpPipelinePolicy> pipeline)
         {
-            if (!_isDistributedTracingEnabled ||
-                !s_diagnosticSource.IsEnabled())
+            if (!ShouldCreateActivity)
             {
                 ProcessNextAsync(message, pipeline, false).EnsureCompleted();
                 return;
@@ -50,57 +49,36 @@ namespace Azure.Core.Pipeline
 
         private async ValueTask ProcessAsync(HttpMessage message, ReadOnlyMemory<HttpPipelinePolicy> pipeline, bool async)
         {
-            var activity = new Activity("Azure.Core.Http.Request");
-            activity.AddTag("http.method", message.Request.Method.Method);
-            activity.AddTag("http.url", message.Request.Uri.ToString());
-            activity.AddTag("requestId", message.Request.ClientRequestId);
-            activity.AddTag("kind", "client");
+            using var scope = new DiagnosticScope("Azure.Core.Http.Request", "Request", s_diagnosticSource, message, s_activitySource, DiagnosticScope.ActivityKind.Client);
+            scope.AddAttribute("http.method", message.Request.Method.Method);
+            scope.AddAttribute("http.url", message.Request.Uri.ToString());
+            scope.AddAttribute("requestId", message.Request.ClientRequestId);
 
             if (_resourceProviderNamespace != null)
             {
-                activity.AddTag("az.namespace", _resourceProviderNamespace);
+                scope.AddAttribute("az.namespace", _resourceProviderNamespace);
             }
 
             if (message.Request.Headers.TryGetValue("User-Agent", out string? userAgent))
             {
-                activity.AddTag("http.user_agent", userAgent);
+                scope.AddAttribute("http.user_agent", userAgent);
             }
 
-            var diagnosticSourceActivityEnabled = s_diagnosticSource.IsEnabled(activity.OperationName, message);
+            scope.Start();
 
-            if (diagnosticSourceActivityEnabled)
+            if (async)
             {
-                s_diagnosticSource.StartActivity(activity, message);
+                await ProcessNextAsync(message, pipeline, true).ConfigureAwait(false);
             }
             else
             {
-                activity.Start();
+                ProcessNextAsync(message, pipeline, false).EnsureCompleted();
             }
 
-            try
+            scope.AddAttribute("http.status_code", message.Response.Status, static i => i.ToString(CultureInfo.InvariantCulture));
+            if (message.Response.Headers.RequestId is string serviceRequestId)
             {
-                if (async)
-                {
-                    await ProcessNextAsync(message, pipeline, true).ConfigureAwait(false);
-                }
-                else
-                {
-                    ProcessNextAsync(message, pipeline, false).EnsureCompleted();
-                }
-
-                activity.AddTag("http.status_code", message.Response.Status.ToString(CultureInfo.InvariantCulture));
-                activity.AddTag("serviceRequestId", message.Response.Headers.RequestId);
-            }
-            finally
-            {
-                if (diagnosticSourceActivityEnabled)
-                {
-                    s_diagnosticSource.StopActivity(activity, message);
-                }
-                else
-                {
-                    activity.Stop();
-                }
+                scope.AddAttribute("serviceRequestId", serviceRequestId);
             }
         }
 
@@ -117,7 +95,7 @@ namespace Azure.Core.Pipeline
                     if (!message.Request.Headers.Contains(TraceParentHeaderName))
                     {
                         message.Request.Headers.Add(TraceParentHeaderName, currentActivityId);
-                        if (currentActivity.TryGetTraceState(out string? traceStateString) && traceStateString != null)
+                        if (currentActivity.GetTraceState() is string traceStateString)
                         {
                             message.Request.Headers.Add(TraceStateHeaderName, traceStateString);
                         }
@@ -142,5 +120,9 @@ namespace Azure.Core.Pipeline
                 return default;
             }
         }
+
+        private bool ShouldCreateActivity =>
+            _isDistributedTracingEnabled &&
+            (s_diagnosticSource.IsEnabled() || ActivityExtensions.ActivitySourceHasListeners(s_activitySource));
     }
 }

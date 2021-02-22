@@ -14,7 +14,7 @@ using NUnit.Framework;
 
 namespace Azure.Core.Tests
 {
-    public class ClientDiagnosticsTests
+    public partial class ClientDiagnosticsTests
     {
         [Test]
         public void CreatesActivityWithNameAndTags()
@@ -71,7 +71,6 @@ namespace Azure.Core.Tests
             Assert.AreEqual("ActivityName.Stop", stopEvent.Key);
 
             Assert.AreEqual(ActivityIdFormat.W3C, activity.IdFormat);
-            CollectionAssert.IsEmpty(activity.Tags);
         }
 
         [Test]
@@ -82,8 +81,8 @@ namespace Azure.Core.Tests
 
             DiagnosticScope scope = clientDiagnostics.CreateScope("ActivityName");
 
-            scope.AddLink("id");
-            scope.AddLink("id2");
+            scope.AddLink("00-6e76af18746bae4eadc3581338bbe8b1-2899ebfdbdce904b-00");
+            scope.AddLink("00-6e76af18746bae4eadc3581338bbe8b2-2899ebfdbdce904b-00");
             scope.Start();
 
             (string Key, object Value, DiagnosticListener) startEvent = testListener.Events.Dequeue();
@@ -107,10 +106,10 @@ namespace Azure.Core.Tests
             Activity linkedActivity2 = activitiesArray[1];
 
             Assert.AreEqual(ActivityIdFormat.W3C, linkedActivity1.IdFormat);
-            Assert.AreEqual("id", linkedActivity1.ParentId);
+            Assert.AreEqual("00-6e76af18746bae4eadc3581338bbe8b1-2899ebfdbdce904b-00", linkedActivity1.ParentId);
 
             Assert.AreEqual(ActivityIdFormat.W3C, linkedActivity2.IdFormat);
-            Assert.AreEqual("id2", linkedActivity2.ParentId);
+            Assert.AreEqual("00-6e76af18746bae4eadc3581338bbe8b2-2899ebfdbdce904b-00", linkedActivity2.ParentId);
 
             Assert.AreEqual(0, testListener.Events.Count);
         }
@@ -192,6 +191,8 @@ namespace Azure.Core.Tests
         {
             DiagnosticScopeFactory clientDiagnostics = new DiagnosticScopeFactory("Azure.Clients",  "Microsoft.Azure.Core.Cool.Tests", false);
             DiagnosticScope scope = clientDiagnostics.CreateScope("");
+
+            Assert.IsFalse(scope.IsEnabled);
 
             scope.AddAttribute("Attribute1", "Value1");
             scope.AddAttribute("Attribute2", 2, i => i.ToString());
