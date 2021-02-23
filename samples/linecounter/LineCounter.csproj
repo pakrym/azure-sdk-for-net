@@ -7,11 +7,16 @@
     <Folder Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\sdk\core\Azure.Core\src\Azure.Core.csproj" />
     <ProjectReference Include="..\..\sdk\eventgrid\Azure.Messaging.EventGrid\src\Azure.Messaging.EventGrid.csproj" />
     <ProjectReference Include="..\..\sdk\eventhub\Azure.Messaging.EventHubs.Processor\src\Azure.Messaging.EventHubs.Processor.csproj" />
     <ProjectReference Include="..\..\sdk\eventhub\Azure.Messaging.EventHubs\src\Azure.Messaging.EventHubs.csproj" />
     <ProjectReference Include="..\..\sdk\extensions\Microsoft.Extensions.Azure\src\Microsoft.Extensions.Azure.csproj" />
     <ProjectReference Include="..\..\sdk\monitor\Azure.Monitor.OpenTelemetry.Exporter\src\Azure.Monitor.OpenTelemetry.Exporter.csproj" />
     <ProjectReference Include="..\..\sdk\storage\Azure.Storage.Blobs\src\Azure.Storage.Blobs.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc2" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc2" />
   </ItemGroup>
 </Project>
