@@ -5,17 +5,19 @@ VisualStudioVersion = 16.0.29211.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineCounter", "LineCounter.csproj", "{79D5BC2B-BF8C-4D72-A989-2ED0E03A235C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Storage.Blobs", "..\..\sdk\storage\Azure.Storage.Blobs\src\Azure.Storage.Blobs.csproj", "{1953E707-F7C9-45F3-88CE-769EA17EBB90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Storage.Blobs", "..\..\sdk\storage\Azure.Storage.Blobs\src\Azure.Storage.Blobs.csproj", "{1953E707-F7C9-45F3-88CE-769EA17EBB90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Messaging.EventHubs", "..\..\sdk\eventhub\Azure.Messaging.EventHubs\src\Azure.Messaging.EventHubs.csproj", "{3241DE52-59FA-48ED-A8FA-8506CFDD24E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Messaging.EventHubs", "..\..\sdk\eventhub\Azure.Messaging.EventHubs\src\Azure.Messaging.EventHubs.csproj", "{3241DE52-59FA-48ED-A8FA-8506CFDD24E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Messaging.EventHubs.Processor", "..\..\sdk\eventhub\Azure.Messaging.EventHubs.Processor\src\Azure.Messaging.EventHubs.Processor.csproj", "{DE0BF238-BA9F-4242-8266-1BEE4027454F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Messaging.EventHubs.Processor", "..\..\sdk\eventhub\Azure.Messaging.EventHubs.Processor\src\Azure.Messaging.EventHubs.Processor.csproj", "{DE0BF238-BA9F-4242-8266-1BEE4027454F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Monitor.OpenTelemetry.Exporter", "..\..\sdk\monitor\Azure.Monitor.OpenTelemetry.Exporter\src\Azure.Monitor.OpenTelemetry.Exporter.csproj", "{AE030BA1-AE6E-451D-ABE5-8A96768A1963}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Monitor.OpenTelemetry.Exporter", "..\..\sdk\monitor\Azure.Monitor.OpenTelemetry.Exporter\src\Azure.Monitor.OpenTelemetry.Exporter.csproj", "{AE030BA1-AE6E-451D-ABE5-8A96768A1963}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Extensions.Azure", "..\..\sdk\extensions\Microsoft.Extensions.Azure\src\Microsoft.Extensions.Azure.csproj", "{627985CB-AF67-4D6B-A226-A7AD6D60A406}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Azure", "..\..\sdk\extensions\Microsoft.Extensions.Azure\src\Microsoft.Extensions.Azure.csproj", "{627985CB-AF67-4D6B-A226-A7AD6D60A406}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure.Core", "..\..\sdk\core\Azure.Core\src\Azure.Core.csproj", "{A6D66C73-9AA7-457E-8557-733358D51AC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Core", "..\..\sdk\core\Azure.Core\src\Azure.Core.csproj", "{A6D66C73-9AA7-457E-8557-733358D51AC1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Messaging.EventGrid", "..\..\sdk\eventgrid\Azure.Messaging.EventGrid\src\Azure.Messaging.EventGrid.csproj", "{C5456456-6094-4429-873D-F0537B02D4DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{A6D66C73-9AA7-457E-8557-733358D51AC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6D66C73-9AA7-457E-8557-733358D51AC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6D66C73-9AA7-457E-8557-733358D51AC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5456456-6094-4429-873D-F0537B02D4DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5456456-6094-4429-873D-F0537B02D4DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5456456-6094-4429-873D-F0537B02D4DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5456456-6094-4429-873D-F0537B02D4DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

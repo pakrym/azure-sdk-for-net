@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+
 using System;
 using System.Buffers;
 using System.IO;

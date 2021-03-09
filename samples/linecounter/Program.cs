@@ -21,6 +21,7 @@ namespace LineCounter
         {
             OpenTelemetry.Sdk.CreateTracerProviderBuilder()
                 .AddSource("Azure.*")
+                .AddConsoleExporter()
                 .AddHttpClientInstrumentation()
                 .AddAspNetCoreInstrumentation()
                 .AddAzureMonitorTraceExporter(o => {
