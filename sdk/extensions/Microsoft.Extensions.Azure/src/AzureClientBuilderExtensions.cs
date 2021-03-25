@@ -117,6 +117,13 @@ namespace Microsoft.Extensions.Azure
             return builder;
         }
 
+        public static IAzureClientBuilder<TClient, TOptions> AddChildClient<TClient, TOptions, TNestedClient>(this IAzureClientBuilder<TClient, TOptions> builder, Func<TClient, TNestedClient> factory) where TOptions : class
+        {
+            var azureClientBuilder = builder.ToBuilder();
+
+            return azureClientBuilder.FactoryBuilder.AddClient<TNestedClient, ClientOptions>()
+        }
+
         private static AzureClientBuilder<TClient, TOptions> ToBuilder<TClient, TOptions>(this IAzureClientBuilder<TClient, TOptions> builder) where TOptions : class
         {
             return (AzureClientBuilder<TClient, TOptions>)builder;

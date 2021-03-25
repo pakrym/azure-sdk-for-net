@@ -127,6 +127,18 @@ namespace Microsoft.Extensions.Azure
         }
 
         /// <summary>
+        /// Adds a client factory for <typeparamref name="TClient"/> using <typeparamref name="TOptions"/> as options type.
+        /// </summary>
+        public IAzureClientBuilder<TClient, ClientOptions> AddNestedClient<TOuterClient, TClient>(Func<TOuterClient, TClient> factory)
+        {
+            return RegisterClientFactory<TClient, ClientOptions>((provider, _, _) =>
+            {
+                var client = provider.GetService<TOuterClient>();
+                return factory(client);
+            }, false);
+        }
+
+        /// <summary>
         /// Adds a client factory for <typeparamref name="TClient"/> using <typeparamref name="TOptions"/> as options type and a <see cref="TokenCredential"/> for authentication.
         /// </summary>
         /// <typeparam name="TClient">The type of the client.</typeparam>
@@ -176,7 +188,7 @@ namespace Microsoft.Extensions.Azure
                 typeof(TClient),
                 provider => provider.GetService<IAzureClientFactory<TClient>>().CreateClient(DefaultClientName));
 
-            return new AzureClientBuilder<TClient, TOptions>(clientRegistration, _serviceCollection);
+            return new AzureClientBuilder<TClient, TOptions>(this, clientRegistration, _serviceCollection);
         }
     }
 }
