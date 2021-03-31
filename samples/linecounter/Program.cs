@@ -17,11 +17,6 @@ namespace LineCounter
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices(
-                    services =>
-                    {
-                        services.AddSingleton<IHostedService, LineCounterService>();
-                    })
                 .ConfigureAppConfiguration(builder => builder.AddUserSecrets(typeof(Program).Assembly))
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
