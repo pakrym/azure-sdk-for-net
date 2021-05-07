@@ -1408,17 +1408,17 @@ namespace Azure.Data.AppConfiguration.Tests
         public async Task CanAddAndGetSecretReference()
         {
             ConfigurationClient service = GetClient();
-            var testSetting = new SecretReferenceConfigurationSetting(GenerateKeyId("secret"), new Uri("http://secret1.com/"));
+            var testSetting = new SecretReferenceValue(GenerateKeyId("secret"), new Uri("http://secret1.com/"));
 
             try
             {
                 var settingResponse = await service.AddConfigurationSettingAsync(testSetting);
                 var setting = settingResponse.Value;
 
-                Assert.IsInstanceOf<SecretReferenceConfigurationSetting>(setting);
+                Assert.IsInstanceOf<SecretReferenceValue>(setting);
                 Assert.AreEqual(testSetting.Key, setting.Key);
                 Assert.AreEqual(testSetting.Value, setting.Value);
-                Assert.AreEqual("http://secret1.com/", ((SecretReferenceConfigurationSetting)setting).SecretId.AbsoluteUri);
+                Assert.AreEqual("http://secret1.com/", ((SecretReferenceValue)setting).SecretId.AbsoluteUri);
             }
             finally
             {
@@ -1430,21 +1430,21 @@ namespace Azure.Data.AppConfiguration.Tests
         public async Task CanAddAndUpdateSecretReference()
         {
             ConfigurationClient service = GetClient();
-            var testSetting = new SecretReferenceConfigurationSetting(GenerateKeyId("secret"), new Uri("http://secret1.com/"));
+            var testSetting = new SecretReferenceValue(GenerateKeyId("secret"), new Uri("http://secret1.com/"));
 
             try
             {
                 var settingResponse = await service.AddConfigurationSettingAsync(testSetting);
 
-                var setting = (SecretReferenceConfigurationSetting) settingResponse.Value;
+                var setting = (SecretReferenceValue) settingResponse.Value;
                 setting.SecretId = new Uri("http://secret2.com/");
 
                 await service.SetConfigurationSettingAsync(setting);
 
                 settingResponse = await service.GetConfigurationSettingAsync(setting.Key);
-                setting = (SecretReferenceConfigurationSetting) settingResponse.Value;
+                setting = (SecretReferenceValue) settingResponse.Value;
 
-                Assert.IsInstanceOf<SecretReferenceConfigurationSetting>(settingResponse.Value);
+                Assert.IsInstanceOf<SecretReferenceValue>(settingResponse.Value);
                 Assert.AreEqual("http://secret2.com/", setting.SecretId.AbsoluteUri);
             }
             finally
@@ -1458,8 +1458,8 @@ namespace Azure.Data.AppConfiguration.Tests
         {
             ConfigurationClient service = GetClient();
 
-            var testSetting1 = new SecretReferenceConfigurationSetting(GenerateKeyId("secret 1-1"), new Uri("http://secret1.com/"));
-            var testSetting2 = new SecretReferenceConfigurationSetting(GenerateKeyId("secret 1-2"), new Uri("http://secret2.com/"));
+            var testSetting1 = new SecretReferenceValue(GenerateKeyId("secret 1-1"), new Uri("http://secret1.com/"));
+            var testSetting2 = new SecretReferenceValue(GenerateKeyId("secret 1-2"), new Uri("http://secret2.com/"));
 
             try
             {
@@ -1473,7 +1473,7 @@ namespace Azure.Data.AppConfiguration.Tests
                 Assert.AreEqual(2, selectedSettings.Count);
                 foreach (var setting in selectedSettings)
                 {
-                    SecretReferenceConfigurationSetting featureFlag = (SecretReferenceConfigurationSetting) setting;
+                    SecretReferenceValue featureFlag = (SecretReferenceValue) setting;
                     StringAssert.StartsWith("http://secret", featureFlag.SecretId.AbsoluteUri);
                     StringAssert.EndsWith(".com/", featureFlag.SecretId.AbsoluteUri);
                 }

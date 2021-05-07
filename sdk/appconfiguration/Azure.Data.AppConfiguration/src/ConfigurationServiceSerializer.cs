@@ -74,43 +74,13 @@ namespace Azure.Data.AppConfiguration
         private static ConfigurationSetting ReadSetting(JsonElement root)
         {
             ConfigurationSetting setting;
-
-            if (IsFeatureFlag(root))
-            {
-                setting = new FeatureFlagConfigurationSetting();
-            }
-            else if (IsSecretReference(root))
-            {
-                setting = new SecretReferenceConfigurationSetting();
-            }
-            else
-            {
-                setting = new ConfigurationSetting();
-            }
-
+            setting = new ConfigurationSetting();
             foreach (JsonProperty property in root.EnumerateObject())
             {
                 ReadPropertyValue(setting, property);
             }
 
             return setting;
-        }
-
-        private static bool IsSecretReference(JsonElement settingElement)
-        {
-            return settingElement.TryGetProperty("content_type", out var contentTypeProperty) &&
-                   contentTypeProperty.ValueKind == JsonValueKind.String &&
-                   contentTypeProperty.GetString() == SecretReferenceConfigurationSetting.SecretReferenceContentType;
-        }
-
-        private static bool IsFeatureFlag(JsonElement settingElement)
-        {
-            return settingElement.TryGetProperty("content_type", out var contentTypeProperty) &&
-                   contentTypeProperty.ValueKind == JsonValueKind.String &&
-                   contentTypeProperty.GetString() == FeatureFlagConfigurationSetting.FeatureFlagContentType &&
-                   settingElement.TryGetProperty("key", out var keyProperty) &&
-                   keyProperty.ValueKind == JsonValueKind.String &&
-                   keyProperty.GetString().StartsWith(FeatureFlagConfigurationSetting.KeyPrefix, StringComparison.Ordinal);
         }
 
         private static void ReadPropertyValue(ConfigurationSetting setting, JsonProperty property)

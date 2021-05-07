@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 
 namespace Azure.Data.AppConfiguration
 {
@@ -29,160 +30,80 @@ namespace Azure.Data.AppConfiguration
     /// NOTE: The Azure.Data.AppConfiguration doesn't evaluate feature flags on retrieval.
     /// It's the responsibility of the library consumer to interpret feature flags and determine whether a feature is enabled.
     /// </summary>
-    public class FeatureFlagConfigurationSetting : ConfigurationSetting
+    public class FeatureFlagValue
     {
-        internal const string FeatureFlagContentType = "application/vnd.microsoft.appconfig.ff+json;charset=utf-8";
+        /// <summary>
+        ///
+        /// </summary>
+        public static string FeatureFlagContentType { get; } = "application/vnd.microsoft.appconfig.ff+json;charset=utf-8";
 
         /// <summary>
-        /// The prefix used for <see cref="FeatureFlagConfigurationSetting"/> setting keys.
+        /// The prefix used for <see cref="FeatureFlagValue"/> setting keys.
         /// </summary>
         public static string KeyPrefix { get; } = ".appconfig.featureflag/";
 
-        private string _originalValue;
-        private bool _isValidValue;
-        private string _featureId;
-        private string _description;
-        private string _displayName;
-        private bool _isEnabled;
-        private IList<FeatureFlagFilter> _clientFilters;
-
-        internal FeatureFlagConfigurationSetting()
-        {
-            _clientFilters = new List<FeatureFlagFilter>();
-        }
-
         /// <summary>
-        /// Initializes an instance of the <see cref="FeatureFlagConfigurationSetting"/> using a provided feature id and
+        /// Initializes an instance of the <see cref="FeatureFlagValue"/> using a provided feature id and
         /// the enabled value.
         /// </summary>
         /// <param name="featureId">The identified of the feature flag.</param>
         /// <param name="isEnabled">The value indicating whether the feature flag is enabled.</param>
-        /// <param name="label">A label used to group this configuration setting with others.</param>
-        public FeatureFlagConfigurationSetting(string featureId, bool isEnabled, string label = null): this()
+        public FeatureFlagValue(string featureId, bool isEnabled)
         {
-            _isValidValue = true;
-            Key = KeyPrefix + featureId;
-            Label = label;
+            ClientFilters = new List<FeatureFlagFilter>();
             IsEnabled = isEnabled;
-            ContentType = FeatureFlagContentType;
             FeatureId = featureId;
         }
 
         /// <summary>
         /// Gets or sets an ID used to uniquely identify and reference the feature
         /// </summary>
-        public string FeatureId
-        {
-            get
-            {
-                CheckValid();
-                return _featureId;
-            }
-            set
-            {
-                CheckValidWrite();
-                _featureId = value;
-            }
-        }
+        public string FeatureId { get; set; }
 
         /// <summary>
         /// Gets or sets a description of the feature.
         /// </summary>
-        public string Description
-        {
-            get
-            {
-                CheckValid();
-                return _description;
-            }
-            set
-            {
-                CheckValidWrite();
-                _description = value;
-            }
-        }
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets a display name for the feature to use for display rather than the ID.
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                CheckValid();
-                return _displayName;
-            }
-            set
-            {
-                CheckValidWrite();
-                _displayName = value;
-            }
-        }
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the features is enabled.
         /// A feature is OFF if enabled is false. If enabled is true, then the feature is ON if there are no conditions or if all conditions are satisfied.
         /// </summary>
-        public bool IsEnabled
-        {
-            get
-            {
-                CheckValid();
-                return _isEnabled;
-            }
-            set
-            {
-                CheckValidWrite();
-                _isEnabled = value;
-            }
-        }
+        public bool IsEnabled { get; set; }
 
         /// <summary>
         /// Filters that must run on the client and be evaluated as true for the feature to be considered enabled.
         /// </summary>
-        public IList<FeatureFlagFilter> ClientFilters
-        {
-            get
-            {
-                CheckValid();
-                return _clientFilters;
-            }
-        }
+        public IList<FeatureFlagFilter> ClientFilters { get; private set; }
 
-        internal override void SetValue(string value)
-        {
-            _originalValue = value;
-
-            _isValidValue = TryParseValue();
-        }
-
-        internal override string GetValue()
-        {
-            return _isValidValue ? FormatValue() : _originalValue;
-        }
-
-        private string FormatValue()
+        /// <inheritdoc />
+        public override string ToString()
         {
             using var memoryStream = new MemoryStream();
             using var writer = new Utf8JsonWriter(memoryStream);
 
             writer.WriteStartObject();
-            writer.WriteString("id", _featureId);
-            if (_description != null)
+            writer.WriteString("id", FeatureId);
+            if (Description != null)
             {
-                writer.WriteString("description", _description);
+                writer.WriteString("description", Description);
             }
-            if (_displayName != null)
+            if (DisplayName != null)
             {
-                writer.WriteString("display_name", _displayName);
+                writer.WriteString("display_name", DisplayName);
             }
-            writer.WriteBoolean("enabled", _isEnabled);
+            writer.WriteBoolean("enabled", IsEnabled);
             writer.WriteStartObject("conditions");
 
-            if (_clientFilters.Any())
+            if (ClientFilters.Any())
             {
                 writer.WriteStartArray("client_filters");
-                foreach (var featureFlagFilter in _clientFilters)
+                foreach (var featureFlagFilter in ClientFilters)
                 {
                     writer.WriteStartObject();
                     writer.WriteString("name", featureFlagFilter.Name);
@@ -199,11 +120,23 @@ namespace Azure.Data.AppConfiguration
             return Encoding.UTF8.GetString(memoryStream.ToArray());
         }
 
-        private bool TryParseValue()
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="featureFlagValue"></param>
+        /// <returns></returns>
+        public static bool TryParse(string value, out FeatureFlagValue featureFlagValue)
         {
+            featureFlagValue = null;
+            List<FeatureFlagFilter> clientFilters;
+            string featureId;
+            bool isEnabled;
+            string description = null;
+            string displayName = null;
             try
             {
-                using var document = JsonDocument.Parse(_originalValue);
+                using var document = JsonDocument.Parse(value);
                 var root = document.RootElement;
 
                 if (!root.TryGetProperty("id", out var idProperty))
@@ -211,14 +144,14 @@ namespace Azure.Data.AppConfiguration
                     return false;
                 }
 
-                _featureId = idProperty.GetString();
+                featureId = idProperty.GetString();
 
                 if (!root.TryGetProperty("enabled", out var enabledProperty))
                 {
                     return false;
                 }
 
-                _isEnabled = enabledProperty.GetBoolean();
+                isEnabled = enabledProperty.GetBoolean();
 
                 if (!root.TryGetProperty("conditions", out var conditionsProperty))
                 {
@@ -227,15 +160,15 @@ namespace Azure.Data.AppConfiguration
 
                 if (root.TryGetProperty("description", out var descriptionProperty))
                 {
-                    _description = descriptionProperty.GetString();
+                    description = descriptionProperty.GetString();
                 }
 
                 if (root.TryGetProperty("display_name", out var displayNameProperty))
                 {
-                    _displayName = displayNameProperty.GetString();
+                    displayName = displayNameProperty.GetString();
                 }
 
-                var newFilters = new ObservableCollection<FeatureFlagFilter>();
+                clientFilters = new List<FeatureFlagFilter>();
                 if (conditionsProperty.TryGetProperty("client_filters", out var clientFiltersProperty))
                 {
                     foreach (var clientFilter in clientFiltersProperty.EnumerateArray())
@@ -245,23 +178,29 @@ namespace Azure.Data.AppConfiguration
                             return false;
                         }
 
-                        Dictionary<string, object> value = null;
+                        Dictionary<string, object> parameters = null;
                         if (clientFilter.TryGetProperty("parameters", out var parametersProperty))
                         {
-                            value = (Dictionary<string, object>)ReadParameterValue(parametersProperty);
+                            parameters = (Dictionary<string, object>)ReadParameterValue(parametersProperty);
                         }
 
-                        newFilters.Add(new FeatureFlagFilter(filterNameProperty.GetString(), value ?? new Dictionary<string, object>()));
+                        clientFilters.Add(new FeatureFlagFilter(filterNameProperty.GetString(), parameters ?? new Dictionary<string, object>()));
                     }
                 }
-
-                _clientFilters = newFilters;
             }
             catch (Exception)
             {
                 return false;
             }
 
+            featureFlagValue = new FeatureFlagValue("", false)
+            {
+                ClientFilters =  clientFilters,
+                FeatureId = featureId,
+                DisplayName =  displayName,
+                Description = description,
+                IsEnabled = isEnabled
+            };
             return true;
         }
 
@@ -353,25 +292,6 @@ namespace Azure.Data.AppConfiguration
                 default:
                     throw new NotSupportedException("Not supported type " + value.GetType());
             }
-        }
-
-        private void CheckValidWrite()
-        {
-            CheckValid();
-            _originalValue = null;
-        }
-
-        private void CheckValid()
-        {
-            if (!_isValidValue)
-            {
-                throw new InvalidOperationException($"The content of the {nameof(Value)} property do not represent a valid feature flag object.");
-            }
-        }
-
-        private void OnFiltersCollectionChange(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            CheckValidWrite();
         }
     }
 }

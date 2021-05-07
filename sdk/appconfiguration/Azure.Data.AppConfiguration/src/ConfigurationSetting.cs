@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net.Mime;
 using System.Text.Json.Serialization;
 
 namespace Azure.Data.AppConfiguration
@@ -35,6 +36,32 @@ namespace Azure.Data.AppConfiguration
         }
 
         /// <summary>
+        /// Creates a configuration setting and sets the values from the passed in parameter to this setting.
+        /// </summary>
+        /// <param name="key">The primary identifier of the configuration setting.</param>
+        /// <param name="value">The configuration setting's value.</param>
+        /// <param name="label">A label used to group this configuration setting with others.</param>
+        public ConfigurationSetting(string key, SecretReferenceValue value, string label = null)
+        {
+            Key = key;
+            Value = value.ToString();
+            Label = label;
+        }
+
+        /// <summary>
+        /// Creates a configuration setting and sets the values from the passed in parameter to this setting.
+        /// </summary>
+        /// <param name="key">The primary identifier of the configuration setting.</param>
+        /// <param name="value">The configuration setting's value.</param>
+        /// <param name="label">A label used to group this configuration setting with others.</param>
+        public ConfigurationSetting(string key, FeatureFlagValue value, string label = null)
+        {
+            Key = key;
+            Value = value.ToString();
+            Label = label;
+        }
+
+        /// <summary>
         /// The primary identifier of the configuration setting.
         /// A <see cref="Key"/> is used together with a <see cref="Label"/> to uniquely identify a configuration setting.
         /// </summary>
@@ -53,6 +80,36 @@ namespace Azure.Data.AppConfiguration
         {
             get => GetValue();
             set => SetValue(value);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool IsFeatureFlag => ContentType == SecretReferenceValue.SecretReferenceContentType;
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public FeatureFlagValue GetFeatureFlagValue()
+        {
+            _ = FeatureFlagValue.TryParse(Value, out var featureFlagValue);
+            return featureFlagValue;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public bool IsSecretReference => ContentType == FeatureFlagValue.FeatureFlagContentType &&
+                                         Key.StartsWith(FeatureFlagValue.KeyPrefix, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public SecretReferenceValue GetSecretReferenceValue()
+        {
+            _ = SecretReferenceValue.TryParse(Value, out var secretReferenceValue);
+            return secretReferenceValue;
         }
 
         internal virtual string GetValue()

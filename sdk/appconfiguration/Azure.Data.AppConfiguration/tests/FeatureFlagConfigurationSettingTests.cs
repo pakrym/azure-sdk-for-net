@@ -45,7 +45,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void CreatingSetsContentTypeAndPrefix()
         {
-            var feature = new FeatureFlagConfigurationSetting("my feature", false);
+            var feature = new ConfigurationSetting("my feature", false);
 
             Assert.AreEqual("application/vnd.microsoft.appconfig.ff+json;charset=utf-8", feature.ContentType);
             Assert.AreEqual(".appconfig.featureflag/my feature" , feature.Key);
@@ -58,7 +58,7 @@ namespace Azure.Data.AppConfiguration
         [TestCase("")]
         public void CanRountripValue(string value)
         {
-            var featureFlag = new FeatureFlagConfigurationSetting();
+            var featureFlag = new FeatureFlagValue();
             featureFlag.Value = value;
 
             Assert.AreEqual(value, featureFlag.Value);
@@ -67,7 +67,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void NewFeatureFlagSerialized()
         {
-            var feature = new FeatureFlagConfigurationSetting("my feature", false);
+            var feature = new FeatureFlagValue("my feature", false);
             feature.IsEnabled = true;
             feature.Description = "Description";
             feature.DisplayName = "Display name";
@@ -102,7 +102,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void FeatureValueIsParsedOnAssignment()
         {
-            var feature = new FeatureFlagConfigurationSetting("random feature", false);
+            var feature = new FeatureFlagValue("random feature", false);
             feature.Value = FullFeatureValue;
             Assert.AreEqual("Feature Id", feature.FeatureId);
             Assert.AreEqual("Description", feature.Description);
@@ -140,7 +140,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void SettingDescriptionChangesValue()
         {
-            var feature = new FeatureFlagConfigurationSetting();
+            var feature = new FeatureFlagValue();
             feature.Value = MinimalFeatureValueWithFormatting;
             feature.Description = "new description";
 
@@ -150,7 +150,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void SettingEnabledChangesValue()
         {
-            var feature = new FeatureFlagConfigurationSetting();
+            var feature = new FeatureFlagValue();
             feature.Value = MinimalFeatureValueWithFormatting;
             feature.IsEnabled = true;
 
@@ -160,7 +160,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void SettingFeatureIdChangesValue()
         {
-            var feature = new FeatureFlagConfigurationSetting();
+            var feature = new FeatureFlagValue();
             feature.Value = MinimalFeatureValueWithFormatting;
             feature.FeatureId = "my old feature";
 
@@ -170,7 +170,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void SettingDisplayNameChangesValue()
         {
-            var feature = new FeatureFlagConfigurationSetting();
+            var feature = new FeatureFlagValue();
             feature.Value = MinimalFeatureValueWithFormatting;
             feature.DisplayName = "Very nice feature indeed";
 
@@ -180,7 +180,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void AddingConditionChangesValue()
         {
-            var feature = new FeatureFlagConfigurationSetting();
+            var feature = new FeatureFlagValue();
             feature.Value = MinimalFeatureValueWithFormatting;
             feature.ClientFilters.Add(new FeatureFlagFilter("file", new Dictionary<string, object>()
             {
@@ -193,7 +193,7 @@ namespace Azure.Data.AppConfiguration
         [Test]
         public void ChangingParametersUpdatesValue()
         {
-            var feature = new FeatureFlagConfigurationSetting();
+            var feature = new FeatureFlagValue();
             feature.Value = MinimalFeatureValueWithFormatting;
             feature.ClientFilters.Add(new FeatureFlagFilter("file", new Dictionary<string, object>()
             {

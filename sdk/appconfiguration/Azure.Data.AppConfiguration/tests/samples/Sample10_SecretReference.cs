@@ -23,7 +23,7 @@ namespace Azure.Data.AppConfiguration.Samples
 #if !SNIPPET
             secretId = TestEnvironment.SecretId;
 #endif
-            var secretReferenceSetting = new SecretReferenceConfigurationSetting("setting", new Uri(secretId));
+            var secretReferenceSetting = new SecretReferenceValue("setting", new Uri(secretId));
             #endregion
 
             #region Snippet:Sample_SetSecretReference
@@ -32,7 +32,7 @@ namespace Azure.Data.AppConfiguration.Samples
 
             #region Snippet:Sample_GetSecretReference
             Response<ConfigurationSetting> response = client.GetConfigurationSetting("setting");
-            if (response.Value is SecretReferenceConfigurationSetting secretReference)
+            if (response.Value is SecretReferenceValue secretReference)
             {
                 var identifier = new KeyVaultSecretIdentifier(secretReference.SecretId);
                 var secretClient = new SecretClient(identifier.VaultUri, new DefaultAzureCredential());
