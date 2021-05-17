@@ -5,6 +5,18 @@ VisualStudioVersion = 16.0.29211.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineCounter", "LineCounter.csproj", "{79D5BC2B-BF8C-4D72-A989-2ED0E03A235C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Core", "..\..\sdk\core\Azure.Core\src\Azure.Core.csproj", "{AD6309EF-16D3-4D52-81B5-E83C8A5F1F89}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Storage.Blobs", "..\..\sdk\storage\Azure.Storage.Blobs\src\Azure.Storage.Blobs.csproj", "{1D0141C4-84AF-4BEE-9EA6-FCE6E91BDC21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Storage.Common", "..\..\sdk\storage\Azure.Storage.Common\src\Azure.Storage.Common.csproj", "{F995172E-DCDB-4A58-B217-DC931EDA1907}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Messaging.EventHubs", "..\..\sdk\eventhub\Azure.Messaging.EventHubs\src\Azure.Messaging.EventHubs.csproj", "{B9463258-E4A5-42C4-9F62-A42CD0A859B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Messaging.EventHubs.Processor", "..\..\sdk\eventhub\Azure.Messaging.EventHubs.Processor\src\Azure.Messaging.EventHubs.Processor.csproj", "{2010F13E-F285-4B9C-A953-4BB0F08EB4ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Messaging.EventGrid", "..\..\sdk\eventgrid\Azure.Messaging.EventGrid\src\Azure.Messaging.EventGrid.csproj", "{FEBB1AD3-5F89-487E-9409-0F5B034DB77D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +27,30 @@ Global
 		{79D5BC2B-BF8C-4D72-A989-2ED0E03A235C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79D5BC2B-BF8C-4D72-A989-2ED0E03A235C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79D5BC2B-BF8C-4D72-A989-2ED0E03A235C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD6309EF-16D3-4D52-81B5-E83C8A5F1F89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD6309EF-16D3-4D52-81B5-E83C8A5F1F89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD6309EF-16D3-4D52-81B5-E83C8A5F1F89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD6309EF-16D3-4D52-81B5-E83C8A5F1F89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D0141C4-84AF-4BEE-9EA6-FCE6E91BDC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D0141C4-84AF-4BEE-9EA6-FCE6E91BDC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D0141C4-84AF-4BEE-9EA6-FCE6E91BDC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D0141C4-84AF-4BEE-9EA6-FCE6E91BDC21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F995172E-DCDB-4A58-B217-DC931EDA1907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F995172E-DCDB-4A58-B217-DC931EDA1907}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F995172E-DCDB-4A58-B217-DC931EDA1907}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F995172E-DCDB-4A58-B217-DC931EDA1907}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9463258-E4A5-42C4-9F62-A42CD0A859B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9463258-E4A5-42C4-9F62-A42CD0A859B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9463258-E4A5-42C4-9F62-A42CD0A859B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9463258-E4A5-42C4-9F62-A42CD0A859B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2010F13E-F285-4B9C-A953-4BB0F08EB4ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2010F13E-F285-4B9C-A953-4BB0F08EB4ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2010F13E-F285-4B9C-A953-4BB0F08EB4ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2010F13E-F285-4B9C-A953-4BB0F08EB4ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEBB1AD3-5F89-487E-9409-0F5B034DB77D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEBB1AD3-5F89-487E-9409-0F5B034DB77D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEBB1AD3-5F89-487E-9409-0F5B034DB77D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEBB1AD3-5F89-487E-9409-0F5B034DB77D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
