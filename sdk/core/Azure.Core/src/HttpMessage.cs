@@ -78,7 +78,7 @@ namespace Azure.Core
         /// Gets or sets the network timeout value for this message. If <c>null</c> the value provided in <see cref="RetryOptions.NetworkTimeout"/> would be used instead.
         /// Defaults to <c>null</c>.
         /// </summary>
-        internal TimeSpan? NetworkTimeout { get; set; }
+        public TimeSpan? NetworkTimeout { get; set; }
 
         /// <summary>
         /// Gets a property that modifies the pipeline behavior. Please refer to individual policies documentation on what properties it supports.
@@ -102,6 +102,17 @@ namespace Azure.Core
             _properties ??= new Dictionary<string, object>();
 
             _properties[name] = value;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+
+        public void SetProperty<T>(string name, object value)
+        {
+
         }
 
         /// <summary>

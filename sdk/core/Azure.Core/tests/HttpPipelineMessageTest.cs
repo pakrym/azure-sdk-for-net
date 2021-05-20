@@ -98,5 +98,48 @@ namespace Azure.Core.Tests
             Assert.AreSame(memoryStream, stream);
             Assert.Throws<InvalidOperationException>(() => { var x = response.Content; });
         }
+
+        [Test]
+        public void SetNetworkTimeoutProperty()
+        {
+            HttpMessage message = new HttpMessage(new MockRequest(), new ResponseClassifier());
+
+            message.NetworkTimeout = TimeSpan.FromHours(2);
+            // + Easy to find
+            // ~ Instance property ties implementation to abstraction
+            // - How do I know if it works? (custom pipelines)
+
+            message.SetNetworkTimeout(TimeSpan.FromHours(2));
+            // + Easy to find
+            // + Is an extension and not an instance property
+            // - How do I know if it works? (custom pipelines)
+
+            message.SetProperty("NetworkTimeout", TimeSpan.FromHours(2));
+            // + Doesn't pollute the abstraction
+            // - Hard to find
+            // - How do I know if it works? (custom pipelines)
+
+            message.SetProperty(ResponseBodyPolicy.NetworkTimeoutProperty, TimeSpan.FromHours(2));
+            // ~ Somewhat easy to find
+            // + Doesn't pollute the abstraction
+            // + Specifies which policy is required
+            // - Requires a public policy type
+            // - Doesn't work well for properties shared between policies (ClientRequestId)
+
+            message.SetProperty<ResponseBodyPolicy>("NetworkTimeout", TimeSpan.FromHours(2));
+            // ~ Somewhat easy to find
+            // - Hard to find
+            // + Specifies which policy is required
+            // - Requires a public policy type
+            // - Doesn't work well for properties shared between policies (ClientRequestId)
+        }
+    }
+
+    public static class MessageExtensions
+    {
+        public static void SetNetworkTimeout(this HttpMessage message, TimeSpan span)
+        {
+            message.SetProperty("NetworkTimeout", span);
+        }
     }
 }

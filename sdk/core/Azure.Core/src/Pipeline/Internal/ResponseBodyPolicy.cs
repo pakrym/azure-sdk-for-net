@@ -25,6 +25,11 @@ namespace Azure.Core.Pipeline
             _networkTimeout = networkTimeout;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static string NetworkTimeoutProperty { get; set; }
+
         public override ValueTask ProcessAsync(HttpMessage message, ReadOnlyMemory<HttpPipelinePolicy> pipeline) =>
             ProcessAsync(message, pipeline, true);
 
