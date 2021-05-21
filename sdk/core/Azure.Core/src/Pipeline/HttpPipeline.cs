@@ -19,7 +19,7 @@ namespace Azure.Core.Pipeline
     /// </summary>
     public class HttpPipeline
     {
-        private const string DefaultMessage = "Service request failed.";
+        private const string DefaultFailureMessage = "Service request failed.";
 
         private static readonly AsyncLocal<HttpMessagePropertiesScope?> CurrentHttpMessagePropertiesScope = new AsyncLocal<HttpMessagePropertiesScope?>();
 
@@ -39,7 +39,7 @@ namespace Azure.Core.Pipeline
         {
         }
 
-        internal HttpPipeline(HttpPipelineTransport transport, HttpPipelinePolicy[]? policies = null, ResponseClassifier? responseClassifier = null, ClientOptions? options = null)
+        internal HttpPipeline(HttpPipelineTransport transport, HttpPipelinePolicy[]? policies, ResponseClassifier? responseClassifier, ClientOptions? options)
         {
             _transport = transport ?? throw new ArgumentNullException(nameof(transport));
             ResponseClassifier = responseClassifier ?? new ResponseClassifier();
@@ -211,33 +211,43 @@ namespace Azure.Core.Pipeline
         }
 
         /// <summary>
-        ///
+        /// Creates an instance of <see cref="RequestFailedException"/> for the provided failed <see cref="HttpMessage"/>.
         /// </summary>
         /// <param name="httpMessage"></param>
         /// <param name="message"></param>
         /// <param name="errorCode"></param>
-        /// <param name="additionalInfo"></param>
+        /// <param name="data"></param>
         /// <param name="innerException"></param>
         /// <returns></returns>
         public async ValueTask<RequestFailedException> CreateRequestFailedExceptionAsync(
             HttpMessage httpMessage,
             string? message = null,
             string? errorCode = null,
-            IDictionary<string, string>? additionalInfo = null,
+            IDictionary<object, object?>? data = null,
             Exception? innerException = null)
         {
-            var response = httpMessage.Response;
-            var content = await ReadContentAsync(response, true).ConfigureAwait(false);
-            var failureContent = ExtractFailureContent(httpMessage, content);
-            return CreateRequestFailedExceptionWithContent(response, message, content, errorCode, additionalInfo, innerException);
+            var content = await ReadContentAsync(httpMessage.Response, true).ConfigureAwait(false);
+            return CreateRequestFailedExceptionWithContent(httpMessage, message, content, errorCode, data, innerException);
         }
 
-        public RequestFailedException CreateRequestFailedException(HttpMessage httpMessage, string? message = null, string? errorCode = null, IDictionary<string, string>? additionalInfo = null, Exception? innerException = null)
+        /// <summary>
+        /// Creates an instance of <see cref="RequestFailedException"/> for the provided failed <see cref="HttpMessage"/>.
+        /// </summary>
+        /// <param name="httpMessage"></param>
+        /// <param name="message"></param>
+        /// <param name="errorCode"></param>
+        /// <param name="data"></param>
+        /// <param name="innerException"></param>
+        /// <returns></returns>
+        public RequestFailedException CreateRequestFailedException(
+            HttpMessage httpMessage,
+            string? message = null,
+            string? errorCode = null,
+            IDictionary<object, object?>? data = null,
+            Exception? innerException = null)
         {
-            var response = httpMessage.Response;
-            string? content = ReadContentAsync(response, false).EnsureCompleted();
-            ExtractFailureContent(content, response.Headers, ref message, ref errorCode, ref additionalInfo);
-            return CreateRequestFailedExceptionWithContent(response, message, content, errorCode, additionalInfo, innerException);
+            string? content = ReadContentAsync(httpMessage.Response, false).EnsureCompleted();
+            return CreateRequestFailedExceptionWithContent(httpMessage, message, content, errorCode, data, innerException);
         }
 
         /// <summary>
@@ -246,29 +256,22 @@ namespace Azure.Core.Pipeline
         /// </summary>
         /// <param name="message">The response headers.</param>
         /// <param name="textContent">The extracted text content</param>
-        protected virtual ErrorInformation? ExtractFailureContent(HttpMessage message, string? textContent)
+        protected virtual ErrorResponseDetails? ExtractFailureContent(HttpMessage message, string? textContent)
         {
             try
             {
-                var responseContent = message.Response.Content;
-                if (responseContent.ToMemory().Length == 0 ||
-                    ContentTypeUtilities.TryGetTextEncoding(message.Response.Headers.ContentType, out var encoding))
-                {
-                    return null;
-                }
-
-                var responseContentString = encoding.GetString(responseContent.ToArray());
                 // Optimistic check for JSON object we expect
-                if (!responseContentString.StartsWith("{", StringComparison.OrdinalIgnoreCase)) return null;
+                if (textContent == null ||
+                    !textContent.StartsWith("{", StringComparison.OrdinalIgnoreCase)) return null;
 
-                var extractFailureContent = new ErrorInformation();
+                var extractFailureContent = new ErrorResponseDetails();
 
-                using JsonDocument document = JsonDocument.Parse(responseContentString);
+                using JsonDocument document = JsonDocument.Parse(textContent);
                 if (document.RootElement.TryGetProperty("error", out var errorProperty))
                 {
                     if (errorProperty.TryGetProperty("code", out var codeProperty))
                     {
-                        extractFailureContent.Status = codeProperty.GetString();
+                        extractFailureContent.ErrorCode = codeProperty.GetString();
                     }
                     if (errorProperty.TryGetProperty("message", out var messageProperty))
                     {
@@ -288,31 +291,36 @@ namespace Azure.Core.Pipeline
         }
 
         private RequestFailedException CreateRequestFailedExceptionWithContent(
-            Response response,
+            HttpMessage httpMessage,
             string? message = null,
             string? content = null,
             string? errorCode = null,
-            IDictionary<string, string>? additionalInfo = null,
+            IDictionary<object, object?>? data = null,
             Exception? innerException = null)
         {
-            var formatMessage = CreateRequestFailedMessageWithContent(response, message, content, errorCode, additionalInfo);
-            var exception = new RequestFailedException(response.Status, formatMessage, errorCode, innerException);
+            var errorInformation = ExtractFailureContent(httpMessage, content);
+            var response = httpMessage.Response;
 
-            if (additionalInfo != null)
+            message ??= errorInformation?.Message ?? DefaultFailureMessage;
+            errorCode ??= errorInformation?.ErrorCode;
+
+            if (errorInformation?.Data != null)
             {
-                foreach (KeyValuePair<string, string> keyValuePair in additionalInfo)
+                if (data == null)
                 {
-                    exception.Data.Add(keyValuePair.Key, keyValuePair.Value);
+                    data = errorInformation.Data;
+                }
+                else
+                {
+                    foreach (var pair in errorInformation.Data)
+                    {
+                        data[pair.Key] = pair.Value;
+                    }
                 }
             }
 
-            return exception;
-        }
-
-        private string CreateRequestFailedMessageWithContent(Response response, string? message, string? content, string? errorCode, IDictionary<string, string>? additionalInfo)
-        {
             StringBuilder messageBuilder = new StringBuilder()
-                .AppendLine(message ?? DefaultFaMessage)
+                .AppendLine(message)
                 .Append("Status: ")
                 .Append(response.Status.ToString(CultureInfo.InvariantCulture));
 
@@ -334,17 +342,18 @@ namespace Azure.Core.Pipeline
                     .AppendLine();
             }
 
-            if (additionalInfo != null && additionalInfo.Count > 0)
+            if (data != null && data.Count > 0)
             {
                 messageBuilder
                     .AppendLine()
                     .AppendLine("Additional Information:");
-                foreach (KeyValuePair<string, string> info in additionalInfo)
+                foreach (KeyValuePair<object, object?> info in data)
                 {
                     messageBuilder
                         .Append(info.Key)
                         .Append(": ")
-                        .AppendLine(info.Value);
+                        .Append(info.Value)
+                        .AppendLine();
                 }
             }
 
@@ -366,7 +375,17 @@ namespace Azure.Core.Pipeline
                 messageBuilder.AppendLine($"{responseHeader.Name}: {headerValue}");
             }
 
-            return messageBuilder.ToString();
+            var exception = new RequestFailedException(response.Status, messageBuilder.ToString(), errorCode, innerException);
+
+            if (data != null)
+            {
+                foreach (KeyValuePair<object, object?> keyValuePair in data)
+                {
+                    exception.Data.Add(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+
+            return exception;
         }
 
         private static async ValueTask<string?> ReadContentAsync(Response response, bool async)
@@ -376,59 +395,11 @@ namespace Azure.Core.Pipeline
             if (response.ContentStream != null &&
                 ContentTypeUtilities.TryGetTextEncoding(response.Headers.ContentType, out var encoding))
             {
-                using (var streamReader = new StreamReader(response.ContentStream, encoding))
-                {
-                    content = async ? await streamReader.ReadToEndAsync().ConfigureAwait(false) : streamReader.ReadToEnd();
-                }
+                using var streamReader = new StreamReader(response.ContentStream, encoding);
+                content = async ? await streamReader.ReadToEndAsync().ConfigureAwait(false) : streamReader.ReadToEnd();
             }
 
             return content;
-        }
-
-        internal static string? GetResourceProviderNamespace(Assembly assembly)
-        {
-            foreach (var customAttribute in assembly.GetCustomAttributes(true))
-            {
-                // Weak bind internal shared type
-                var attributeType = customAttribute.GetType();
-                if (attributeType.Name == "AzureResourceProviderNamespaceAttribute")
-                {
-                    return attributeType.GetProperty("ResourceProviderNamespace")?.GetValue(customAttribute) as string;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        protected class ErrorInformation
-        {
-            /// <summary>
-            ///
-            /// </summary>
-            public ErrorInformation()
-            {
-                AdditionalProperties = new Dictionary<string, object>();
-            }
-
-            /// <summary>
-            ///
-            /// </summary>
-            public string? Message { get; set; }
-            /// <summary>
-            ///
-            /// </summary>
-            public string? Status { get; set; }
-            /// <summary>
-            ///
-            /// </summary>
-            public string? Content { get; set; }
-            /// <summary>
-            ///
-            /// </summary>
-            public IDictionary<string, object> AdditionalProperties { get; }
         }
     }
 }

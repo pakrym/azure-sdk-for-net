@@ -294,9 +294,9 @@ namespace Azure.Core
                 }
                 else
                 {
-                    _operationFailedException = state.OperationFailedException ?? (async
-                        ? await _diagnostics.CreateRequestFailedExceptionAsync(state.RawResponse).ConfigureAwait(false)
-                        : _diagnostics.CreateRequestFailedException(state.RawResponse));
+                    // _operationFailedException = state.OperationFailedException ?? (async
+                    //     ? await _diagnostics.CreateRequestFailedExceptionAsync(state.RawResponse).ConfigureAwait(false)
+                    //     : _diagnostics.CreateRequestFailedException(state.RawResponse));
                     HasCompleted = true;
 
                     throw _operationFailedException;
