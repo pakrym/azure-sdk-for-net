@@ -41,8 +41,8 @@ namespace Azure.Core.Pipeline
                 if (responseHeaders.ContentType.Contains(Constants.ContentTypeApplicationXml))
                 {
                     XDocument xml = XDocument.Parse(content);
-                    errorCode = xml.Root.Element(Constants.ErrorCode).Value;
-                    message = xml.Root.Element(Constants.ErrorMessage).Value;
+                    errorCode ??= xml.Root.Element(Constants.ErrorCode).Value;
+                    message ??= xml.Root.Element(Constants.ErrorMessage).Value;
 
                     foreach (XElement element in xml.Root.Elements())
                     {
@@ -74,8 +74,8 @@ namespace Azure.Core.Pipeline
                         }
                     }
 
-                    message = error.GetProperty(Constants.MessagePropertyKey).GetString();
-                    errorCode = error.GetProperty(Constants.CodePropertyKey).GetString();
+                    message ??= error.GetProperty(Constants.MessagePropertyKey).GetString();
+                    errorCode ??= error.GetProperty(Constants.CodePropertyKey).GetString();
                     additionalInfo = details;
                 }
             }
@@ -85,7 +85,7 @@ namespace Azure.Core.Pipeline
                 // The other headers will appear in the "Headers" section of the Exception message.
                 if (responseHeaders.TryGetValue(Constants.HeaderNames.ErrorCode, out string? value))
                 {
-                    errorCode = value;
+                    errorCode ??= value;
                 }
             }
         }

@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Azure.Core.Pipeline;
 
 #nullable enable
 
@@ -31,6 +28,20 @@ namespace Azure.Core.Pipeline
             _sanitizer = new HttpMessageSanitizer(
                 options.Diagnostics.LoggedQueryParameters.ToArray(),
                 options.Diagnostics.LoggedHeaderNames.ToArray());
+        }
+
+        public async ValueTask<RequestFailedException> CreateRequestFailedExceptionAsync(Response response, string? message = null, string? errorCode = null, IDictionary<string, string>? additionalInfo = null, Exception? innerException = null)
+        {
+            var content = await ReadContentAsync(response, true).ConfigureAwait(false);
+            ExtractFailureContent(content, response.Headers, ref message, ref errorCode, ref additionalInfo);
+            return CreateRequestFailedExceptionWithContent(response, message, content, errorCode, additionalInfo, innerException);
+        }
+
+        public RequestFailedException CreateRequestFailedException(Response response, string? message = null, string? errorCode = null, IDictionary<string, string>? additionalInfo = null, Exception? innerException = null)
+        {
+            string? content = ReadContentAsync(response, false).EnsureCompleted();
+            ExtractFailureContent(content, response.Headers, ref message, ref errorCode, ref additionalInfo);
+            return CreateRequestFailedExceptionWithContent(response, message, content, errorCode, additionalInfo, innerException);
         }
 
         /// <summary>
@@ -61,7 +72,7 @@ namespace Azure.Core.Pipeline
                 {
                     if (errorProperty.TryGetProperty("code", out var codeProperty))
                     {
-                        errorCode = codeProperty.GetString();
+                        errorCode ??= codeProperty.GetString();
                     }
                     if (errorProperty.TryGetProperty("message", out var messageProperty))
                     {
@@ -72,7 +83,7 @@ namespace Azure.Core.Pipeline
                 // Make sure we parsed a message so we don't overwrite the value with null
                 if (parsedMessage != null)
                 {
-                    message = parsedMessage;
+                    message ??= parsedMessage;
                 }
             }
             catch (Exception)
@@ -82,21 +93,7 @@ namespace Azure.Core.Pipeline
             }
         }
 
-        public async ValueTask<RequestFailedException> CreateRequestFailedExceptionAsync(Response response, string? message = null, string? errorCode = null, IDictionary<string, string>? additionalInfo = null, Exception? innerException = null)
-        {
-            var content = await ReadContentAsync(response, true).ConfigureAwait(false);
-            ExtractFailureContent(content, response.Headers, ref message, ref errorCode, ref additionalInfo);
-            return CreateRequestFailedExceptionWithContent(response, message, content, errorCode, additionalInfo, innerException);
-        }
-
-        public RequestFailedException CreateRequestFailedException(Response response, string? message = null, string? errorCode = null, IDictionary<string, string>? additionalInfo = null, Exception? innerException = null)
-        {
-            string? content = ReadContentAsync(response, false).EnsureCompleted();
-            ExtractFailureContent(content, response.Headers, ref message, ref errorCode, ref additionalInfo);
-            return CreateRequestFailedExceptionWithContent(response, message, content, errorCode, additionalInfo, innerException);
-        }
-
-        public RequestFailedException CreateRequestFailedExceptionWithContent(
+        private RequestFailedException CreateRequestFailedExceptionWithContent(
             Response response,
             string? message = null,
             string? content = null,
@@ -118,13 +115,7 @@ namespace Azure.Core.Pipeline
             return exception;
         }
 
-        public async ValueTask<string> CreateRequestFailedMessageAsync(Response response, string? message, string? errorCode, IDictionary<string, string>? additionalInfo, bool async)
-        {
-            var content = await ReadContentAsync(response, async).ConfigureAwait(false);
-            return CreateRequestFailedMessageWithContent(response, message, content, errorCode, additionalInfo);
-        }
-
-        public string CreateRequestFailedMessageWithContent(Response response, string? message, string? content, string? errorCode, IDictionary<string, string>? additionalInfo)
+        private string CreateRequestFailedMessageWithContent(Response response, string? message, string? content, string? errorCode, IDictionary<string, string>? additionalInfo)
         {
             StringBuilder messageBuilder = new StringBuilder()
                 .AppendLine(message ?? DefaultMessage)

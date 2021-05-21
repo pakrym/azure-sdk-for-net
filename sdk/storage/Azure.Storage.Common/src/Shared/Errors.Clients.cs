@@ -106,9 +106,7 @@ namespace Azure.Storage
             => new ArgumentException($"The version specified by {paramName} is not supported by this library.");
 
         public static RequestFailedException ClientRequestIdMismatch(ClientDiagnostics clientDiagnostics, Response response, string echo, string original)
-            => clientDiagnostics.CreateRequestFailedExceptionWithContent(
-                response,
-                $"Response x-ms-client-request-id '{echo}' does not match the original expected request id, '{original}'.", errorCode: response.GetErrorCode(null));
+            => clientDiagnostics.CreateRequestFailedException(response, message: $"Response x-ms-client-request-id '{echo}' does not match the original expected request id, '{original}'.");
 
         public static void VerifyHttpsTokenAuth(Uri uri)
         {

@@ -107,9 +107,15 @@ namespace Azure.Identity
             // 502 is typically due to the client dealing with a proxy configuration, which is not supported.
             if (response.Status == 400 || response.Status == 502)
             {
-                string message = _identityUnavailableErrorMessage ?? await Pipeline.Diagnostics
-                    .CreateRequestFailedMessageAsync(response, IdentityUnavailableError, null, null, async)
-                    .ConfigureAwait(false);
+                string message = _identityUnavailableErrorMessage;
+                if (message == null)
+                {
+                    var exception = async ?
+                            await Pipeline.Diagnostics.CreateRequestFailedExceptionAsync(response, IdentityUnavailableError).ConfigureAwait(false) :
+                            Pipeline.Diagnostics.CreateRequestFailedException(response, IdentityUnavailableError);
+
+                    message = exception.Message;
+                }
 
                 Interlocked.CompareExchange(ref _identityUnavailableErrorMessage, message, null);
                 throw new CredentialUnavailableException(message);

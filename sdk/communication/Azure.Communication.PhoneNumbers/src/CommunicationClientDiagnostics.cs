@@ -47,8 +47,8 @@ namespace Azure.Core.Pipeline
                     if (property.NameEquals("error"))
                     {
                         var communicationError = CommunicationError.DeserializeCommunicationError(property.Value);
-                        errorCode = communicationError.Code;
-                        message = communicationError.Message;
+                        errorCode ??= communicationError.Code;
+                        message ??= communicationError.Message;
                         additionalInfo = new Dictionary<string, string>() { ["target"] = communicationError.Target };
                         break;
                     }
