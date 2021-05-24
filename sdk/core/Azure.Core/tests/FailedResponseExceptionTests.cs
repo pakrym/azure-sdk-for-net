@@ -15,7 +15,7 @@ namespace Azure.Core.Tests
     public class FailedResponseExceptionTests
     {
         private static readonly string s_nl = Environment.NewLine;
-        private static HttpPipeline HttpPipeline = new HttpPipeline(new MockTransport(), null, new ResponseClassifier(), new TestClientOption());
+        private static HttpPipeline HttpPipeline = new HttpPipeline(new MockTransport(), null, new ResponseClassifier(new TestClientOption()));
 
         [Test]
         public async Task FormatsResponse()
@@ -32,10 +32,7 @@ namespace Azure.Core.Tests
             response.AddHeader(new HttpHeader("Custom-Header", "Value"));
             response.AddHeader(new HttpHeader("x-ms-requestId", "123"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 
@@ -54,10 +51,7 @@ namespace Azure.Core.Tests
             response.AddHeader(new HttpHeader("Custom-Header-2", "Value"));
             response.AddHeader(new HttpHeader("x-ms-requestId-2", "123"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 
@@ -80,10 +74,7 @@ namespace Azure.Core.Tests
             response.AddHeader(new HttpHeader("x-ms-requestId", "123"));
             response.SetContent("{\"errorCode\": 1}");
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 
@@ -101,10 +92,7 @@ namespace Azure.Core.Tests
             response.AddHeader(new HttpHeader("Content-Type", "binary"));
             response.SetContent("{\"errorCode\": 1}");
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 
@@ -124,10 +112,7 @@ namespace Azure.Core.Tests
             response.AddHeader(new HttpHeader("Custom-Header", "Value"));
             response.AddHeader(new HttpHeader("x-ms-requestId", "123"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message, errorCode: "CUSTOM CODE");
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response, new ErrorResponseDetails { ErrorCode =  "CUSTOM CODE" });
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 
@@ -150,14 +135,11 @@ namespace Azure.Core.Tests
             response.AddHeader(new HttpHeader("Custom-Header", "Value"));
             response.AddHeader(new HttpHeader("x-ms-requestId", "123"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message, data: new Dictionary<object, object>()
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response, new ErrorResponseDetails { Data =
             {
                 {"a", "a-value"},
                 {"b", "b-value"},
-            });
+            }});
 
             Assert.AreEqual(formattedResponse, exception.Message);
             Assert.AreEqual("a-value", exception.Data["a"]);
@@ -183,7 +165,7 @@ namespace Azure.Core.Tests
             message.Response = response;
 
             var innerException = new Exception();
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message, innerException: innerException);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response, innerException: innerException);
             Assert.AreEqual(formattedResponse, exception.Message);
             Assert.AreEqual(innerException, exception.InnerException);
         }
@@ -222,10 +204,7 @@ namespace Azure.Core.Tests
             response.SetContent("{ \"error\": { \"code\":\"StatusCode\", \"message\":\"Custom message\" }}");
             response.AddHeader(new HttpHeader("Content-Type", "text/json"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
             Assert.AreEqual("StatusCode", exception.ErrorCode);
         }
@@ -247,10 +226,7 @@ namespace Azure.Core.Tests
             response.SetContent("{ \"error\": { \"code\":\"StatusCode\"");
             response.AddHeader(new HttpHeader("Content-Type", "text/json"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 
@@ -271,10 +247,7 @@ namespace Azure.Core.Tests
             response.SetContent("{ \"code\":\"StatusCode\" }");
             response.AddHeader(new HttpHeader("Content-Type", "text/json"));
 
-            var message = HttpPipeline.CreateMessage();
-            message.Response = response;
-
-            RequestFailedException exception = await HttpPipeline.CreateRequestFailedExceptionAsync(message);
+            RequestFailedException exception = await HttpPipeline.ResponseClassifier.CreateRequestFailedExceptionAsync(response);
             Assert.AreEqual(formattedResponse, exception.Message);
         }
 

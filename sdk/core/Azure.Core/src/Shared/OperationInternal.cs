@@ -39,6 +39,7 @@ namespace Azure.Core
         private readonly IOperation<T> _operation;
 
         private readonly ClientDiagnostics _diagnostics;
+        private readonly ResponseClassifier _responseClassifier;
 
         private readonly string _updateStatusScopeName;
 
@@ -47,6 +48,7 @@ namespace Azure.Core
         private T _value;
 
         private RequestFailedException _operationFailedException;
+        private string _longRunningOperationFailed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationInternal{T}"/> class.
@@ -70,12 +72,13 @@ namespace Azure.Core
         /// parameter <paramref name="operation"/>.
         /// </param>
         /// <param name="scopeAttributes">The attributes to use during diagnostic scope creation.</param>
-        public OperationInternal(ClientDiagnostics clientDiagnostics, IOperation<T> operation, Response rawResponse, string operationTypeName = null, IEnumerable<KeyValuePair<string, string>> scopeAttributes = null)
+        public OperationInternal(ClientDiagnostics clientDiagnostics, ResponseClassifier responseClassifier, IOperation<T> operation, Response rawResponse, string operationTypeName = null, IEnumerable<KeyValuePair<string, string>> scopeAttributes = null)
         {
             operationTypeName ??= operation.GetType().Name;
 
             _operation = operation;
             _diagnostics = clientDiagnostics;
+            _responseClassifier = responseClassifier;
             _updateStatusScopeName = $"{operationTypeName}.UpdateStatus";
             _scopeAttributes = scopeAttributes?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             RawResponse = rawResponse;
@@ -294,9 +297,13 @@ namespace Azure.Core
                 }
                 else
                 {
-                    // _operationFailedException = state.OperationFailedException ?? (async
-                    //     ? await _diagnostics.CreateRequestFailedExceptionAsync(state.RawResponse).ConfigureAwait(false)
-                    //     : _diagnostics.CreateRequestFailedException(state.RawResponse));
+                    _longRunningOperationFailed = "Long-running operation failed.";
+                    _operationFailedException = state.OperationFailedException ?? (async
+                        ? await _responseClassifier.CreateRequestFailedExceptionAsync(state.RawResponse, new ErrorResponseDetails
+                        {
+                            Message = _longRunningOperationFailed
+                        }).ConfigureAwait(false)
+                        : _responseClassifier.CreateRequestFailedException(state.RawResponse));
                     HasCompleted = true;
 
                     throw _operationFailedException;

@@ -17,6 +17,8 @@ namespace Azure.Core.Tests
 
         private static ClientDiagnostics ClientDiagnostics = new ClientDiagnostics(new TestClientOption());
 
+        private static ResponseClassifier ResponseClassifier = new(new TestClientOption());
+
         [Test]
         public void DefaultPropertyInitialization()
         {
@@ -479,8 +481,8 @@ namespace Azure.Core.Tests
             public TestOperation(Response rawResponse = null, string operationTypeName = null, IEnumerable<KeyValuePair<string, string>> scopeAttributes = null)
             {
                 MockOperationInternal = operationTypeName is null && scopeAttributes is null
-                    ? new MockOperationInternal<int>(ClientDiagnostics, this, rawResponse)
-                    : new MockOperationInternal<int>(ClientDiagnostics, this, rawResponse, operationTypeName, scopeAttributes);
+                    ? new MockOperationInternal<int>(ClientDiagnostics, ResponseClassifier, this, rawResponse)
+                    : new MockOperationInternal<int>(ClientDiagnostics, ResponseClassifier, this, rawResponse, operationTypeName, scopeAttributes);
             }
 
             public MockOperationInternal<int> MockOperationInternal { get; }
@@ -493,13 +495,13 @@ namespace Azure.Core.Tests
 
         private class MockOperationInternal<TResult> : OperationInternal<TResult>
         {
-            public MockOperationInternal(ClientDiagnostics clientDiagnostics, IOperation<TResult> operation, Response rawResponse)
-                : base(clientDiagnostics, operation, rawResponse)
+            public MockOperationInternal(ClientDiagnostics clientDiagnostics, ResponseClassifier responseClassifier, IOperation<TResult> operation, Response rawResponse)
+                : base(clientDiagnostics, responseClassifier, operation, rawResponse)
             {
             }
 
-            public MockOperationInternal(ClientDiagnostics clientDiagnostics, IOperation<TResult> operation, Response rawResponse, string operationTypeName, IEnumerable<KeyValuePair<string, string>> scopeAttributes)
-                : base(clientDiagnostics, operation, rawResponse, operationTypeName, scopeAttributes)
+            public MockOperationInternal(ClientDiagnostics clientDiagnostics, ResponseClassifier responseClassifier, IOperation<TResult> operation, Response rawResponse, string operationTypeName, IEnumerable<KeyValuePair<string, string>> scopeAttributes)
+                : base(clientDiagnostics, responseClassifier, operation, rawResponse, operationTypeName, scopeAttributes)
             {
             }
 
