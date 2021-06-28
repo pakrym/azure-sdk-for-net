@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>OpenTelemetry support for Azure Core shared client library for .NET</AssemblyTitle>
+    <Version>1.0.0-beta.1</Version>
+    <Description>This library contains the OpenTelemetry collector for Azure.Core-based libraries.</Description>
+    <PackageTags>Microsoft Azure SDK OpenTelemetry</PackageTags>
+    <TargetFrameworks>$(RequiredTargetFrameworks)</TargetFrameworks>
+    <EnableClientSdkAnalyzers>false</EnableClientSdkAnalyzers>
+    <NoWarn>$(NoWarn);SA1636</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" VersionOverride="5.0.1" />
+    <PackageReference Include="OpenTelemetry" />
+  </ItemGroup>
+
+  <!-- Pull in Shared Source from Azure.Core -->
+  <ItemGroup>
+    <Compile Include="$(AzureCoreSharedSources)Argument.cs" Link="Shared\%(RecursiveDir)\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>
